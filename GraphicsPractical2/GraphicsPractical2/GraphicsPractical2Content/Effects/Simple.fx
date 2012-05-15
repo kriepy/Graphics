@@ -1,6 +1,7 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
+#define LightSource (50,50,50)
 
 //------------------------------------- Top Level Variables -------------------------------------
 
@@ -8,6 +9,8 @@
 
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World;
+float4 DiffuseColor, AmbientColor, SpecularColor;
+float AmbientIntensity, SpecularIntensity, SpecularPower;
 
 //---------------------------------- Input / Output structures ----------------------------------
 
@@ -18,6 +21,7 @@ struct VertexShaderInput
 {
 	float4 Position3D : POSITION0;
 	float3 normal : NORMAL0;
+	float4 color : COLOR0;
 };
 
 // The output of the vertex shader. After being passed through the interpolator/rasterizer it is also 
@@ -45,7 +49,7 @@ float4 NormalColor(float3 normal)
 	//color.rgb = normal.xyz
 	float4 color = float4(0,0,0,1);
 	color.rgb = normal;
-	return float4(color);
+	return color;
 }
 
 // Implement the Procedural texturing assignment here
@@ -75,6 +79,18 @@ float3 ProceduralColor(VertexShaderOutput input)
 	}
 }
 
+float4 LambertianShading(float3 normal)
+{
+	float3x3 rotationAndScale = (float3x3) World;
+	float4 ambient = mul(AmbientIntensity,AmbientColor);
+	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource)))*DiffuseColor;
+	float3 reflection = -LightSource + 2* dot(LightSource,normal) * normal;
+	float4 specular = SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)),normalize(reflection))),SpecularPower);
+
+	float4 color = (ambient+diffuse+specular);
+	return color;
+}
+
 //---------------------------------------- Technique: Simple ----------------------------------------
 
 VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
@@ -93,9 +109,9 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
-	input.normal = ProceduralColor(input);
-	float4 color = NormalColor(input.normal);
-	
+	//input.normal = ProceduralColor(input);
+	//float4 color = NormalColor(input.normal);
+	float4 color = LambertianShading(input.normal);
 	
 	return color;
 }

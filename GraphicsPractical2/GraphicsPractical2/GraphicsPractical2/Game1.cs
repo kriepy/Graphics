@@ -21,7 +21,7 @@ namespace GraphicsPractical2
 
         // Game objects and variables
         Camera camera;
-        
+
         // Model
         Model    model;
         Material modelMaterial;
@@ -119,15 +119,22 @@ namespace GraphicsPractical2
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
 
-            //Material effecten of zo
-            //effect.Parameters= modelMaterial.SetEffectParameters(
+           
 
             // Set the effect parameters
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
             effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
-            // Draw the model
+
+            //Material effecten of zo
+            effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
+            effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
+            effect.Parameters["AmbientIntensity"].SetValue(0.2f);
+            effect.Parameters["SpecularColor"].SetValue(Color.White.ToVector4());
+            effect.Parameters["SpecularIntensity"].SetValue(2.0f);
+            effect.Parameters["SpecularPower"].SetValue(25.0f);
+            // Draw the modelmo
             mesh.Draw();
 
             base.Draw(gameTime);
