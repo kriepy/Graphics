@@ -32,6 +32,7 @@ struct VertexShaderOutput
 {
 	float4 Position2D : POSITION0;
 	float3 normal : TEXCOORD0;
+	float4 Position3D : TEXCOORD1;
 };
 
 //------------------------------------------ Functions ------------------------------------------
@@ -48,9 +49,30 @@ float4 NormalColor(float3 normal)
 }
 
 // Implement the Procedural texturing assignment here
-float4 ProceduralColor(/* parameter(s) */)
+float3 ProceduralColor(VertexShaderOutput input)
 {
-	return float4(0,0,0,1);
+	if (sin(Pi*input.Position3D.x/0.15)>0)
+	{
+		if (sin(Pi*input.Position3D.y/0.15)>0)
+		{
+			return input.normal;
+		}
+		else
+		{
+			return -input.normal;
+		}
+	}
+	else
+	{
+		if (sin(Pi*input.Position3D.y/0.15)>0)
+		{
+			return -input.normal;
+		}
+		else
+		{
+			return input.normal;
+		}
+	}
 }
 
 //---------------------------------------- Technique: Simple ----------------------------------------
@@ -63,6 +85,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 	// Do the matrix multiplications for perspective projection and the world transform
 	float4 worldPosition = mul(input.Position3D, World);
     float4 viewPosition  = mul(worldPosition, View);
+	output.Position3D = input.Position3D;
 	output.Position2D    = mul(viewPosition, Projection);
 	output.normal = input.normal;
 	return output;
@@ -70,8 +93,10 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
+	input.normal = ProceduralColor(input);
 	float4 color = NormalColor(input.normal);
-
+	
+	
 	return color;
 }
 

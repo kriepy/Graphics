@@ -119,6 +119,9 @@ namespace GraphicsPractical2
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
 
+            //Material effecten of zo
+            //effect.Parameters= modelMaterial.SetEffectParameters(
+
             // Set the effect parameters
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
