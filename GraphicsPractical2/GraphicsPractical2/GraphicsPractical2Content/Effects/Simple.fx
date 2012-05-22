@@ -8,9 +8,10 @@
 // Top level variables can and have to be set at runtime
 
 // Matrices for 3D perspective projection 
-float4x4 View, Projection, World, World2;
+float4x4 View, Projection, World, World2, quadTransform;
 float4 DiffuseColor, AmbientColor, SpecularColor;
 float AmbientIntensity, SpecularIntensity, SpecularPower;
+Texture Texture;
 
 //---------------------------------- Input / Output structures ----------------------------------
 
@@ -40,6 +41,16 @@ struct VertexShaderOutput
 };
 
 //------------------------------------------ Functions ------------------------------------------
+
+// Texture sampler
+sampler2D TextureSampler = 
+sampler_state
+{
+    Texture = Texture;
+    MipFilter = LINEAR;
+    MinFilter = LINEAR;
+    MagFilter = LINEAR;
+};
 
 // Implement the Coloring using normals assignment here
 float4 NormalColor(float3 normal)
@@ -99,7 +110,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 	VertexShaderOutput output = (VertexShaderOutput)0;
 
 	// Do the matrix multiplications for perspective projection and the world transform
-	float4 worldPosition = mul(input.Position3D, World);
+	float4 worldPosition = mul(input.Position3D, quadTransform);
     float4 viewPosition  = mul(worldPosition, View);
 	output.Position3D = input.Position3D;
 	output.Position2D    = mul(viewPosition, Projection);
@@ -111,9 +122,9 @@ float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
 	//input.normal = ProceduralColor(input);
 	//float4 color = NormalColor(input.normal);
-	float4 color = LambertianShading(input.normal);
-	
-	return color;
+	//float4 color = LambertianShading(input.normal);
+	return tex2D(TextureSampler,input.Position3D.xz);
+	//return color;
 }
 
 technique Simple
