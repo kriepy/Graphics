@@ -119,13 +119,13 @@ namespace GraphicsPractical2
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
 
-           
-
             // Set the effect parameters
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
-            effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
+            Matrix World = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
+            effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World));
+            effect.Parameters["World"].SetValue(World);
 
             //Material effecten of zo
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());

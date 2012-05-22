@@ -8,7 +8,7 @@
 // Top level variables can and have to be set at runtime
 
 // Matrices for 3D perspective projection 
-float4x4 View, Projection, World;
+float4x4 View, Projection, World, World2;
 float4 DiffuseColor, AmbientColor, SpecularColor;
 float AmbientIntensity, SpecularIntensity, SpecularPower;
 
@@ -81,7 +81,7 @@ float3 ProceduralColor(VertexShaderOutput input)
 
 float4 LambertianShading(float3 normal)
 {
-	float3x3 rotationAndScale = (float3x3) World;
+	float4x4 rotationAndScale = World2;
 	float4 ambient = mul(AmbientIntensity,AmbientColor);
 	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource)))*DiffuseColor;
 	float3 reflection = -LightSource + 2* dot(LightSource,normal) * normal;
