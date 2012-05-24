@@ -34,6 +34,10 @@ namespace GraphicsPractical2
         VertexPositionNormalTexture[] quadVertices;
         short[] quadIndices;
         Matrix  quadTransform;
+        VertexDeclaration quadVertexDecl;
+
+        //Texture
+        Texture2D texture;
 
         public Game1()
         {
@@ -80,6 +84,8 @@ namespace GraphicsPractical2
             model.Meshes[0].MeshParts[0].Effect = effect;
             // Setup the quad
             SetupQuad();
+            // load texture
+            texture = Content.Load<Texture2D>("Textures/CobblestonesDiffuse");
         }
 
         private void SetupQuad()
@@ -93,15 +99,19 @@ namespace GraphicsPractical2
             // Top left
             quadVertices[0].Position = new Vector3(-1, 0, -1);
             quadVertices[0].Normal = quadNormal;
+            quadVertices[0].TextureCoordinate = new Vector2(0.0f, 0.0f);
             // Top right
             quadVertices[1].Position = new Vector3(1, 0, -1);
             quadVertices[1].Normal = quadNormal;
+            quadVertices[1].TextureCoordinate = new Vector2(1.0f, 0.0f);
             // Bottom left
             quadVertices[2].Position = new Vector3(-1, 0, 1);
             quadVertices[2].Normal = quadNormal;
+            quadVertices[2].TextureCoordinate = new Vector2(0.0f, 1.0f);
             // Bottom right
             quadVertices[3].Position = new Vector3(1, 0, 1);
             quadVertices[3].Normal = quadNormal;
+            quadVertices[3].TextureCoordinate = new Vector2(1.0f, 1.0f);
 
             quadIndices = new short[] { 0, 1, 2, 1, 2, 3 };
             quadTransform = Matrix.CreateScale(scale);
@@ -126,19 +136,14 @@ namespace GraphicsPractical2
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
 
-           
-
             // Set the effect parameters
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
-            Matrix a = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
-            a=Matrix.Invert(a);
-            a=Matrix.Transpose(a);
-            effect.Parameters["World2"].SetValue(a);
-            Matrix a1 = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
-            effect.Parameters["World"].SetValue(a1);
 
+            Matrix World = Matrix.CreateScale(10.0f);//, 6.5f, 2.5f);
+            effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World));
+            effect.Parameters["World"].SetValue(World);
             //Material effecten of zo
             //modelMaterial.SetEffectParameters(effect);
 
@@ -148,13 +153,21 @@ namespace GraphicsPractical2
             effect.Parameters["SpecularColor"].SetValue(Color.White.ToVector4());
             effect.Parameters["SpecularIntensity"].SetValue(2.0f);
             effect.Parameters["SpecularPower"].SetValue(25.0f);
+
+            //effecten voor texture
             effect.Parameters["Texture"].SetValue(texture);
+            effect.Parameters["quadTransform"].SetValue(quadTransform);
 
-
-            quadVertices[0].Position.x * quadTransform;
-            device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
-
+            // Draw the model
+            effect.Parameters["Shading"].SetValue(true);
+            effect.Parameters["Move"].SetValue(new Vector4(0, 0, 0, 0));
             mesh.Draw();
+            effect.Parameters["Shading"].SetValue(false);
+            effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
+            foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
+            // Draw the underground
+            
+            device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
 
 
             base.Draw(gameTime);
