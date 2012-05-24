@@ -133,7 +133,7 @@ namespace GraphicsPractical2
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
-            Matrix World = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
+            Matrix World = Matrix.CreateScale(10.0f);//, 6.5f, 2.5f);
             effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World));
             effect.Parameters["World"].SetValue(World);
 
@@ -149,9 +149,14 @@ namespace GraphicsPractical2
             effect.Parameters["quadTransform"].SetValue(quadTransform);
 
             // Draw the model
-            //mesh.Draw();
+            effect.Parameters["Shading"].SetValue(true);
+            effect.Parameters["Move"].SetValue(new Vector4(0, 0, 0, 0));
+            mesh.Draw();
+            effect.Parameters["Shading"].SetValue(false);
+            effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
             foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
             // Draw the underground
+            
             device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
 
             base.Draw(gameTime);
