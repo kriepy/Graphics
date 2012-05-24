@@ -190,7 +190,7 @@ namespace GraphicsPractical2
             
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
             
