@@ -178,7 +178,7 @@ namespace GraphicsPractical2
             // Draw the underground
             device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
             
-            GraphicsDevice.SetRenderTarget(null);
+            device.SetRenderTarget(null);
 
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,
                     SamplerState.LinearClamp, DepthStencilState.Default,

@@ -7,7 +7,10 @@ sampler TextureSampler = sampler_state
  
 float4 PixelShaderFunction(float2 TextureCoordinate : TEXCOORD0) : COLOR0
 {
-    float4 color = tex2D(TextureSampler, TextureCoordinate);    
+    float4 color = tex2D(TextureSampler, TextureCoordinate);
+	color.r = pow(color.r,1/1.5f);
+	color.g = pow(color.g,1/1.5f);
+	color.b = pow(color.b,1/1.5f);
     return color;
 }
  
