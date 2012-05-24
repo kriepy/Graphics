@@ -35,6 +35,12 @@ namespace GraphicsPractical2
         //Texture
         Texture2D texture;
 
+        //Post Processing
+        private Effect postEffect;
+
+        // Create a new render target
+        RenderTarget2D renderTarget;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -61,6 +67,11 @@ namespace GraphicsPractical2
             // Initialize the camera
             camera = new Camera(new Vector3(0, 50, 100), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
 
+            // initialize render target
+            renderTarget = new RenderTarget2D( device, device.PresentationParameters.BackBufferWidth,
+                device.PresentationParameters.BackBufferHeight, false, device.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24);
+
             IsMouseVisible = true;
 
             base.Initialize();
@@ -72,6 +83,8 @@ namespace GraphicsPractical2
             spriteBatch = new SpriteBatch(device);
             // Load the "Simple" effect
             Effect effect = Content.Load<Effect>("Effects/Simple");
+            // Load the "PostProcessing" effect
+            postEffect = Content.Load<Effect>("Effects/PostProcessing");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Models/Teapot");
             model.Meshes[0].MeshParts[0].Effect = effect;
@@ -122,6 +135,10 @@ namespace GraphicsPractical2
 
         protected override void Draw(GameTime gameTime)
         {
+            // set render target
+            device.SetRenderTarget(renderTarget);
+            device.DepthStencilState = new DepthStencilState() { DepthBufferEnable = true };
+
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
             
@@ -148,16 +165,28 @@ namespace GraphicsPractical2
             effect.Parameters["Texture"].SetValue(texture);
             effect.Parameters["quadTransform"].SetValue(quadTransform);
 
-            // Draw the model
+            //set effecten voor model
             effect.Parameters["Shading"].SetValue(true);
             effect.Parameters["Move"].SetValue(new Vector4(0, 0, 0, 0));
+            // Draw the model
             mesh.Draw();
+
+            //set effecten voor underground
             effect.Parameters["Shading"].SetValue(false);
             effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
             foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
             // Draw the underground
-            
             device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
+            
+            GraphicsDevice.SetRenderTarget(null);
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
+                    SamplerState.LinearClamp, DepthStencilState.Default,
+                    RasterizerState.CullNone, postEffect);
+            
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
