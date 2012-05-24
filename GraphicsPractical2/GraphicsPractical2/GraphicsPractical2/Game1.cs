@@ -26,6 +26,10 @@ namespace GraphicsPractical2
         Model    model;
         Material modelMaterial;
 
+        //Texture
+        Texture texture;
+        
+
         // Quad
         VertexPositionNormalTexture[] quadVertices;
         short[] quadIndices;
@@ -38,6 +42,8 @@ namespace GraphicsPractical2
             // Create and add a frame rate counter
             frameRateCounter = new FrameRateCounter(this);
             Components.Add(frameRateCounter);
+            
+           
         }
 
         protected override void Initialize()
@@ -70,6 +76,7 @@ namespace GraphicsPractical2
             Effect effect = Content.Load<Effect>("Effects/Simple");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Models/Teapot");
+            texture = Content.Load<Texture>("Textures/CobblestonesDiffuse");
             model.Meshes[0].MeshParts[0].Effect = effect;
             // Setup the quad
             SetupQuad();
@@ -125,17 +132,30 @@ namespace GraphicsPractical2
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
-            effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
+            Matrix a = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
+            a=Matrix.Invert(a);
+            a=Matrix.Transpose(a);
+            effect.Parameters["World2"].SetValue(a);
+            Matrix a1 = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
+            effect.Parameters["World"].SetValue(a1);
 
             //Material effecten of zo
+            //modelMaterial.SetEffectParameters(effect);
+
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientIntensity"].SetValue(0.2f);
             effect.Parameters["SpecularColor"].SetValue(Color.White.ToVector4());
             effect.Parameters["SpecularIntensity"].SetValue(2.0f);
             effect.Parameters["SpecularPower"].SetValue(25.0f);
-            // Draw the modelmo
+            effect.Parameters["Texture"].SetValue(texture);
+
+
+            quadVertices[0].Position.x * quadTransform;
+            device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
+
             mesh.Draw();
+
 
             base.Draw(gameTime);
         }
