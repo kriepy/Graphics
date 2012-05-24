@@ -26,8 +26,7 @@ namespace GraphicsPractical2
         Model    model;
         Material modelMaterial;
 
-        //Texture
-        Texture texture;
+   
         
 
         // Quad
@@ -93,7 +92,7 @@ namespace GraphicsPractical2
             postEffect = Content.Load<Effect>("Effects/PostProcessing");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Models/Teapot");
-            texture = Content.Load<Texture>("Textures/CobblestonesDiffuse");
+            texture = Content.Load<Texture2D>("Textures/CobblestonesDiffuse");
             model.Meshes[0].MeshParts[0].Effect = effect;
             // Setup the quad
             SetupQuad();
@@ -190,7 +189,7 @@ namespace GraphicsPractical2
             
             GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
             

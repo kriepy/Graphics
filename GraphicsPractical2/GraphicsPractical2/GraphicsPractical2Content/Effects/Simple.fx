@@ -103,6 +103,7 @@ float4 LambertianShading(float3 normal)
 	float4 specular = SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)),normalize(reflection))),SpecularPower);
 
 	float4 color = (ambient+diffuse+specular);
+	color.a = 1;
 	return color;
 }
 
