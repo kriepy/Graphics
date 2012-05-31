@@ -94,15 +94,16 @@ float3 ProceduralColor(VertexShaderOutput input)
 	}
 }
 
-float4 LambertianShading(float3 normal)
+float4 LambertianShading(float3 normal, float3 position)
 {
 	float4x4 rotationAndScale = World;
+	normal = normalize(normal);
 	float4 ambient = mul(AmbientIntensity,AmbientColor);
-	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource)))*DiffuseColor;
-	float3 reflection = -LightSource + 2* dot(LightSource,normal) * normal;
-	float4 specular = SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)),normalize(reflection))),SpecularPower);
+	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource-position)))*DiffuseColor;
+	float3 reflection = -normalize(LightSource-position) + 2* dot(normalize(LightSource-position),normal) * normal;
+	float4 specular = SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)-position),normalize(reflection))),SpecularPower) * SpecularIntensity;
 
-	float4 color = (ambient+diffuse+specular);
+	float4 color = ambient+diffuse+specular;
 	color.a = 1;
 	return color;
 }
@@ -121,7 +122,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
     float4 viewPosition  = mul(worldPosition, View);
 	output.Position3D = input.Position3D+Move;
 	output.Position2D    = mul(viewPosition, Projection);
-	output.normal = input.normal;
+	output.normal = normalize(mul(World2,input.normal));
 	output.TextureCoordinate = input.TextureCoordinate;
 	return output;
 }
@@ -131,7 +132,7 @@ float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 	if (Shading) {
 	//input.normal = ProceduralColor(input);
 	//float4 color = NormalColor(input.normal);
-	float4 color = LambertianShading(input.normal);
+	float4 color = LambertianShading(input.normal, input.Position3D);
 	return color;}
 	else{return tex2D(TextureSampler,input.TextureCoordinate.xy);}
 }

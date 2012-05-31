@@ -9,3 +9,14 @@ C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractica
 C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\obj\x86\Debug\GraphicsPractical2.exe
 C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\obj\x86\Debug\GraphicsPractical2.pdb
 C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\PostProcessing.xnb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\Simple.xnb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\PostProcessing.xnb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Models\Teapot.xnb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Normal Maps\CobblestonesNormal.xnb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Textures\CobblestonesDiffuse.xnb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\GraphicsPractical2.exe
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\GraphicsPractical2.pdb
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\obj\x86\Debug\GraphicsPractical2.exe
+C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\obj\x86\Debug\GraphicsPractical2.pdb
