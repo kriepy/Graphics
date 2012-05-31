@@ -11,7 +11,7 @@
 float4x4 View, Projection, World, World2, quadTransform;
 float4 DiffuseColor, AmbientColor, SpecularColor, Move;
 float AmbientIntensity, SpecularIntensity, SpecularPower;
-bool Shading;
+bool Shading, Ex11, Ex12, Ex21;
 Texture Texture, Mapping;
 
 //---------------------------------- Input / Output structures ----------------------------------
@@ -139,16 +139,21 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
-	if (Shading) {
-	//input.normal = ProceduralColor(input);
-	//float4 color = NormalColor(input.normal);
-	float4 color = LambertianShading(input.normal, input.Position3D, DiffuseColor);
-	return color;}
-	else{
-	 float4 color = tex2D(TextureSampler,input.TextureCoordinate.xy);
-	 float4 adjust = tex2D(BumpMap,input.TextureCoordinate.xy);
-	 color = LambertianShading(input.normal+(2*adjust.xyz-1), input.Position3D, color);
-	 return color;
+	if (Ex11)
+	{
+		float4 color = NormalColor(input.normal);
+		return color;
+	}
+	if (Ex12)
+	{
+		input.normal = ProceduralColor(input);
+		float4 color = NormalColor(input.normal);
+		return color;
+	}
+	else
+	{
+		float4 color = float4(0,0,0,0);
+		return color;
 	}
 }
 

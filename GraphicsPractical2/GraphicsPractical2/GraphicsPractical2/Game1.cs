@@ -26,7 +26,12 @@ namespace GraphicsPractical2
         Model    model;
         Material modelMaterial;
 
-   
+        // Keyusage
+        int ExNr = 0;
+        int timer = 0;
+        
+        //Writing into the screen
+        SpriteFont font;
         
 
         // Quad
@@ -100,6 +105,8 @@ namespace GraphicsPractical2
             // load texture
             texture = Content.Load<Texture2D>("Textures/CobblestonesDiffuse");
             normalMapping = Content.Load<Texture2D>("Normal Maps/CobblestonesNormal");
+            //font
+            font = Content.Load<SpriteFont>("myFont");
         }
 
         private void SetupQuad()
@@ -131,9 +138,39 @@ namespace GraphicsPractical2
             quadTransform = Matrix.CreateScale(scale);
         }
 
+         private void DrawText()
+        {
+            string Nr = "none";
+             if (ExNr == 0) {Nr = "1.1";}
+             if (ExNr == 1) {Nr = "1.2";}
+             if (ExNr == 2) {Nr = "2.1";}
+             if (ExNr == 3) {Nr = "2.2";}
+             if (ExNr == 4) {Nr = "2.3";}
+             if (ExNr == 5) {Nr = "2.4";}
+             if (ExNr == 6) {Nr = "3.1";}
+             if (ExNr == 7) {Nr = "4.1";}
+             if (ExNr == 8) {Nr = "4.2";}
+             spriteBatch.DrawString(font, "Exercise " + Nr, new Vector2(20, 45), Color.White);
+        }
+
         protected override void Update(GameTime gameTime)
         {
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
+
+            //Keyboard usage
+            KeyboardState KeyState = Keyboard.GetState();
+
+
+            if (KeyState.IsKeyDown(Keys.Right)) 
+            { 
+                timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 1) % 9;} 
+            }
+            if (KeyState.IsKeyDown(Keys.Left)) 
+            { 
+                timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 8) % 9; } 
+            }
+            if (KeyState.IsKeyUp(Keys.Right) && KeyState.IsKeyUp(Keys.Left)){ timer = 0 ;}
+
 
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
@@ -143,6 +180,7 @@ namespace GraphicsPractical2
 
         protected override void Draw(GameTime gameTime)
         {
+
             // set render target
             device.SetRenderTarget(renderTarget);
             device.DepthStencilState = new DepthStencilState() { DepthBufferEnable = true };
@@ -172,6 +210,12 @@ namespace GraphicsPractical2
             effect.Parameters["SpecularIntensity"].SetValue(2.0f);
             effect.Parameters["SpecularPower"].SetValue(25.0f);
 
+            //keyboard doorgeven
+            if (ExNr == 0) { effect.Parameters["Ex11"].SetValue(true); } else { effect.Parameters["Ex11"].SetValue(false); }
+            if (ExNr == 1) { effect.Parameters["Ex12"].SetValue(true); } else { effect.Parameters["Ex12"].SetValue(false); }
+            if (ExNr == 2) { effect.Parameters["Ex21"].SetValue(true); } else { effect.Parameters["Ex21"].SetValue(true); }
+
+
             //effecten voor texture
             effect.Parameters["Texture"].SetValue(texture);
             effect.Parameters["Mapping"].SetValue(normalMapping);
@@ -184,23 +228,31 @@ namespace GraphicsPractical2
             mesh.Draw();
 
             //set effecten voor underground
+
             effect.Parameters["Shading"].SetValue(false);
             effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
             effect.Parameters["AmbientIntensity"].SetValue(0.0f);
+            if (ExNr > 5)
+            {
             foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
-            // Draw the underground
+            //Draw the underground
+
             device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
-            
+            }
             device.SetRenderTarget(null);
 
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
             postEffect.Parameters["Gamma"].SetValue(1.0f);
+
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
+
+            DrawText();
             spriteBatch.End();
+            //tot hier underground
 
-
+            //moet altijd worden getekend
             base.Draw(gameTime);
         }
     }
