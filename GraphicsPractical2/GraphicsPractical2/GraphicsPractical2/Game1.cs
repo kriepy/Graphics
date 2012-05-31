@@ -37,6 +37,7 @@ namespace GraphicsPractical2
 
         //Texture
         Texture2D texture;
+        Texture2D normalMapping;
 
         //Post Processing
         private Effect postEffect;
@@ -98,6 +99,7 @@ namespace GraphicsPractical2
             SetupQuad();
             // load texture
             texture = Content.Load<Texture2D>("Textures/CobblestonesDiffuse");
+            normalMapping = Content.Load<Texture2D>("Normal Maps/CobblestonesNormal");
         }
 
         private void SetupQuad()
@@ -172,6 +174,7 @@ namespace GraphicsPractical2
 
             //effecten voor texture
             effect.Parameters["Texture"].SetValue(texture);
+            effect.Parameters["Mapping"].SetValue(normalMapping);
             effect.Parameters["quadTransform"].SetValue(quadTransform);
 
             //set effecten voor model
@@ -183,6 +186,7 @@ namespace GraphicsPractical2
             //set effecten voor underground
             effect.Parameters["Shading"].SetValue(false);
             effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
+            effect.Parameters["AmbientIntensity"].SetValue(0.0f);
             foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
             // Draw the underground
             device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
@@ -192,9 +196,8 @@ namespace GraphicsPractical2
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
-            
+            postEffect.Parameters["Gamma"].SetValue(1.0f);
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
-
             spriteBatch.End();
 
 

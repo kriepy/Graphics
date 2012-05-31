@@ -8,7 +8,7 @@
       <Processor>EffectProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\Simple.xnb</Output>
-      <Time>2012-05-31T14:26:26.7552095+02:00</Time>
+      <Time>2012-05-31T16:06:10.5541751+02:00</Time>
     </Item>
     <Item>
       <Source>Effects\PostProcessing.fx</Source>
@@ -17,7 +17,7 @@
       <Processor>EffectProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\PostProcessing.xnb</Output>
-      <Time>2012-05-31T13:47:38.8964577+02:00</Time>
+      <Time>2012-05-31T15:15:31.7285542+02:00</Time>
     </Item>
     <Item>
       <Source>Models\Teapot.fbx</Source>

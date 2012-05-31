@@ -1,5 +1,7 @@
 texture ScreenTexture;
- 
+
+float Gamma;
+
 sampler TextureSampler = sampler_state
 {
     Texture = <ScreenTexture>;
@@ -8,9 +10,9 @@ sampler TextureSampler = sampler_state
 float4 PixelShaderFunction(float2 TextureCoordinate : TEXCOORD0) : COLOR0
 {
     float4 color = tex2D(TextureSampler, TextureCoordinate);
-	color.r = pow(color.r,1.2f);
-	color.g = pow(color.g,1.2f);
-	color.b = pow(color.b,1.2f);
+	color.r = pow(color.r,Gamma);
+	color.g = pow(color.g,Gamma);
+	color.b = pow(color.b,Gamma);
 
     return color;
 }

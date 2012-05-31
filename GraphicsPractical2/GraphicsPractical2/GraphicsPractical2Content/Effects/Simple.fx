@@ -12,7 +12,7 @@ float4x4 View, Projection, World, World2, quadTransform;
 float4 DiffuseColor, AmbientColor, SpecularColor, Move;
 float AmbientIntensity, SpecularIntensity, SpecularPower;
 bool Shading;
-Texture Texture;
+Texture Texture, Mapping;
 
 //---------------------------------- Input / Output structures ----------------------------------
 
@@ -25,7 +25,6 @@ struct VertexShaderInput
 	float3 normal : NORMAL0;
 	float4 color : COLOR0;
 	float2 TextureCoordinate: TEXCOORD0;
-
 };
 
 // The output of the vertex shader. After being passed through the interpolator/rasterizer it is also 
@@ -51,6 +50,15 @@ sampler2D TextureSampler =
 sampler_state
 {
     Texture = Texture;
+    MipFilter = LINEAR;
+    MinFilter = LINEAR;
+    MagFilter = LINEAR;
+};
+
+sampler2D BumpMap = 
+sampler_state
+{
+    Texture = Mapping;
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
@@ -94,16 +102,16 @@ float3 ProceduralColor(VertexShaderOutput input)
 	}
 }
 
-float4 LambertianShading(float3 normal, float3 position)
+float4 LambertianShading(float3 normal, float3 position, float4 Color)
 {
 	float4x4 rotationAndScale = World;
 	normal = normalize(normal);
 	float4 ambient = mul(AmbientIntensity,AmbientColor);
-	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource-position)))*DiffuseColor;
+	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource-position)))*Color;
 	float3 reflection = -normalize(LightSource-position) + 2* dot(normalize(LightSource-position),normal) * normal;
-	float4 specular = SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)-position),normalize(reflection))),SpecularPower) * SpecularIntensity;
+	float4 specular = 0;//SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)-position),normalize(reflection))),SpecularPower) * SpecularIntensity;
 
-	float4 color = ambient+diffuse+specular;
+	float4 color = diffuse+ambient+specular;
 	color.a = 1;
 	return color;
 }
@@ -117,12 +125,14 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 	// Do the matrix multiplications for perspective projection and the world transform
 	float4 worldPosition;
-	if (Shading) {worldPosition = mul(input.Position3D+Move,World);}
-	else {worldPosition = mul(input.Position3D+Move, quadTransform);}
+	if (Shading) {worldPosition = mul(input.Position3D+Move, World);}
+	else         {worldPosition = mul(input.Position3D+Move, quadTransform);}
     float4 viewPosition  = mul(worldPosition, View);
-	output.Position3D = input.Position3D+Move;
+
+	//fill the output
+	output.Position3D    = input.Position3D+Move;
 	output.Position2D    = mul(viewPosition, Projection);
-	output.normal = normalize(mul(World2,input.normal));
+	output.normal        = input.normal;
 	output.TextureCoordinate = input.TextureCoordinate;
 	return output;
 }
@@ -132,9 +142,14 @@ float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 	if (Shading) {
 	//input.normal = ProceduralColor(input);
 	//float4 color = NormalColor(input.normal);
-	float4 color = LambertianShading(input.normal, input.Position3D);
+	float4 color = LambertianShading(input.normal, input.Position3D, DiffuseColor);
 	return color;}
-	else{return tex2D(TextureSampler,input.TextureCoordinate.xy);}
+	else{
+	 float4 color = tex2D(TextureSampler,input.TextureCoordinate.xy);
+	 float4 adjust = tex2D(BumpMap,input.TextureCoordinate.xy);
+	 color = LambertianShading(input.normal+(2*adjust.xyz-1), input.Position3D, color);
+	 return color;
+	}
 }
 
 technique Simple
