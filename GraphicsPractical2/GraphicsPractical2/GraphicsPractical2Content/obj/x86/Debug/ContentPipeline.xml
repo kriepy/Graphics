@@ -7,8 +7,8 @@
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\Simple.xnb</Output>
-      <Time>2012-05-31T23:45:23.1315606+02:00</Time>
+      <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\Simple.xnb</Output>
+      <Time>2012-06-04T11:46:12.3922553+02:00</Time>
     </Item>
     <Item>
       <Source>Effects\PostProcessing.fx</Source>
@@ -16,8 +16,8 @@
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\PostProcessing.xnb</Output>
-      <Time>2012-05-31T19:50:12.1195629+02:00</Time>
+      <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Effects\PostProcessing.xnb</Output>
+      <Time>2012-05-31T15:15:31.7285542+02:00</Time>
     </Item>
     <Item>
       <Source>Models\Teapot.fbx</Source>
@@ -25,11 +25,11 @@
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Models\Teapot.xnb</Output>
-      <Time>2012-02-08T17:00:09.2816+01:00</Time>
+      <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Models\Teapot.xnb</Output>
+      <Time>2012-05-31T13:47:38.8964577+02:00</Time>
       <Dependency>
         <Key>obj\x86\Debug\Models\Teapot_0.xml</Key>
-        <Value>2012-05-31T20:59:21.3964361+02:00</Value>
+        <Value>2012-06-04T11:15:46.8327477+02:00</Value>
       </Dependency>
     </Item>
     <Item>
@@ -38,8 +38,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Normal Maps\CobblestonesNormal.xnb</Output>
-      <Time>2012-02-24T06:55:39.146+01:00</Time>
+      <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Normal Maps\CobblestonesNormal.xnb</Output>
+      <Time>2012-05-31T13:47:38.9276577+02:00</Time>
     </Item>
     <Item>
       <Source>Textures\CobblestonesDiffuse.png</Source>
@@ -47,15 +47,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Textures\CobblestonesDiffuse.xnb</Output>
-      <Time>2012-02-24T06:55:34.9808+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Models\Teapot.fbx</Source>
-      <Importer>FbxImporter</Importer>
-      <Options>IntermediateFile, DontCacheImportedData</Options>
-      <Output>obj\x86\Debug\Models\Teapot_0.xml</Output>
-      <Time>2012-02-08T17:00:09.2816+01:00</Time>
+      <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\Textures\CobblestonesDiffuse.xnb</Output>
+      <Time>2012-05-31T13:47:38.9432578+02:00</Time>
     </Item>
     <Item>
       <Source>myFont.spritefont</Source>
@@ -63,8 +56,15 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\myFont.xnb</Output>
-      <Time>2012-05-31T21:39:17.1889696+02:00</Time>
+      <Output>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\myFont.xnb</Output>
+      <Time>2012-06-04T11:15:39.2893162+02:00</Time>
+    </Item>
+    <Item>
+      <Source>Models\Teapot.fbx</Source>
+      <Importer>FbxImporter</Importer>
+      <Options>IntermediateFile, DontCacheImportedData</Options>
+      <Output>obj\x86\Debug\Models\Teapot_0.xml</Output>
+      <Time>2012-05-31T13:47:38.8964577+02:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -72,10 +72,10 @@
       <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2Content\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2Content\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Kristin\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2Content\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2Content\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Toby\Documents\Graphics\Graphics\GraphicsPractical2\GraphicsPractical2\GraphicsPractical2\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -104,7 +104,7 @@
       </Assembly>
       <Assembly>
         <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2012-04-26T14:38:36.2847076+02:00</Value>
+        <Value>2012-04-25T21:27:08.5358694+02:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

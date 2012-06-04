@@ -68,8 +68,6 @@ sampler_state
 float4 NormalColor(float3 normal)
 {
 	//VertexShaderOutput input = (VertexShaderInput);
-	//float4 color;
-	//color.rgb = normal.xyz
 	float4 color = float4(0,0,0,1);
 	color.rgb = normal;
 	return color;
@@ -109,9 +107,15 @@ float4 LambertianShading(float3 normal, float3 position, float4 Color)
 	float4 ambient = mul(AmbientIntensity,AmbientColor);
 	float4 diffuse = max(0,dot(normalize(mul(rotationAndScale, normal)),normalize(LightSource-position)))*Color;
 	float3 reflection = -normalize(LightSource-position) + 2* dot(normalize(LightSource-position),normal) * normal;
-	float4 specular = 0;//SpecularColor * pow(max(0,dot(normalize(float3(0,50,100)-position),normalize(reflection))),SpecularPower) * SpecularIntensity;
+	// Phong shading
+	// float4 specular = SpecularColor * pow(max(0.00001f,dot(normalize(float3(0,50,100)-position),normalize(reflection))),SpecularPower) * SpecularIntensity;
 
-	float4 color = diffuse+ambient+specular;
+	//Blinn Phong
+	float3 half_vector = normalize(float3(0,50,100) + (LightSource-position));
+	float  HdotN = max( 0.00001f, dot( half_vector,  normal) );
+	float4 specular = SpecularColor * pow( HdotN, SpecularPower ) * SpecularIntensity;
+
+	float4 color = ambient + diffuse + specular;
 	color.a = 1;
 	return color;
 }
@@ -125,8 +129,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 	// Do the matrix multiplications for perspective projection and the world transform
 	float4 worldPosition;
-	if (Shading) {worldPosition = mul(input.Position3D+Move, World);}
-	else         {worldPosition = mul(input.Position3D+Move, quadTransform);}
+	worldPosition = mul(input.Position3D+Move, World);
     float4 viewPosition  = mul(worldPosition, View);
 
 	//fill the output
@@ -152,7 +155,7 @@ float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 	}
 	else
 	{
-		float4 color = float4(0,0,0,0);
+		float4 color = LambertianShading(input.normal, input.Position3D, DiffuseColor);
 		return color;
 	}
 }
@@ -163,5 +166,37 @@ technique Simple
 	{
 		VertexShader = compile vs_2_0 SimpleVertexShader();
 		PixelShader  = compile ps_2_0 SimplePixelShader();
+	}
+}
+
+//---------------------------------------- Technique: Simple ----------------------------------------
+VertexShaderOutput Simple2VertexShader(VertexShaderInput input)
+{
+	// Allocate an empty output struct
+	VertexShaderOutput output = (VertexShaderOutput)0;
+
+	// Do the matrix multiplications for perspective projection and the world transform
+	float4 worldPosition;
+	worldPosition = mul(input.Position3D+Move, quadTransform);
+    float4 viewPosition  = mul(worldPosition, View);
+	//fill the output
+	output.Position3D    = input.Position3D+Move;
+	output.Position2D    = mul(viewPosition, Projection);
+	output.normal        = input.normal;
+	output.TextureCoordinate = input.TextureCoordinate;
+	return output;
+}
+
+float4 Simple2PixelShader(VertexShaderOutput input) : COLOR0
+{
+	return tex2D(TextureSampler,input.TextureCoordinate.xy);
+}
+
+technique Simple2
+{
+	pass Pass0
+	{
+		VertexShader = compile vs_2_0 Simple2VertexShader();
+		PixelShader  = compile ps_2_0 Simple2PixelShader();
 	}
 }

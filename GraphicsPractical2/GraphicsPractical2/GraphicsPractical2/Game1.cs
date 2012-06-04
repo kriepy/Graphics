@@ -205,9 +205,9 @@ namespace GraphicsPractical2
 
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
-            effect.Parameters["AmbientIntensity"].SetValue(0.2f);
+            if (ExNr > 2) { effect.Parameters["AmbientIntensity"].SetValue(0.2f); } else { effect.Parameters["AmbientIntensity"].SetValue(0.0f); }
             effect.Parameters["SpecularColor"].SetValue(Color.White.ToVector4());
-            effect.Parameters["SpecularIntensity"].SetValue(2.0f);
+            if (ExNr > 3) { effect.Parameters["SpecularIntensity"].SetValue(2.0f); } else { effect.Parameters["SpecularIntensity"].SetValue(0.0f); }
             effect.Parameters["SpecularPower"].SetValue(25.0f);
 
             //keyboard doorgeven
@@ -229,6 +229,7 @@ namespace GraphicsPractical2
 
             //set effecten voor underground
 
+            effect.CurrentTechnique = effect.Techniques["Simple2"];
             effect.Parameters["Shading"].SetValue(false);
             effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
             effect.Parameters["AmbientIntensity"].SetValue(0.0f);
