@@ -100,8 +100,7 @@ float4 LambertianShading(float3 normal, float3 position, float4 Color)
 {
 	// The World2 matrix is used for transforming the normals properly in the same way the world is transformed
 	float4x4 rotationAndScale = World2;
-	normal = normalize(normal);
-	normal = normalize(mul( rotationAndScale, normal));
+	normal = normalize(mul(normal, rotationAndScale));
 
 	// The three lighting factors are calculated seperatly
 	// Ambient light is just a constant
@@ -206,7 +205,7 @@ float4 Simple2PixelShader(VertexShaderOutput input) : COLOR0
 		float4 adjust = tex2D(BumpMap,input.TextureCoordinate.xy);
 	
 		//Apply shading to the model
-		color = LambertianShading(input.normal+(2*adjust.xyz-1), input.Position3D, color);
+		color = LambertianShading(normalize(input.normal+(2*adjust.xyz-1)), input.Position3D, color);
 
 		return color;
 	}
