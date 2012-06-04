@@ -164,11 +164,11 @@ namespace GraphicsPractical2
             KeyboardState KeyState = Keyboard.GetState();
 
             //Change through exersizes using the 'up' and 'down' keys
-            if (KeyState.IsKeyDown(Keys.Up)) 
+            if (KeyState.IsKeyDown(Keys.Down)) 
             { 
                 timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 1) % 9;} 
             }
-            if (KeyState.IsKeyDown(Keys.Down)) 
+            if (KeyState.IsKeyDown(Keys.Up)) 
             { 
                 timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 8) % 9; } 
             }
