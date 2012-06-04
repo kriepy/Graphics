@@ -29,6 +29,8 @@ namespace GraphicsPractical2
         // Keyusage
         int ExNr = 0;
         int timer = 0;
+        //   for rotation
+        float rotationAmount = 0;
         
         //Writing into the screen
         SpriteFont font;
@@ -161,17 +163,27 @@ namespace GraphicsPractical2
             //Keyboard usage
             KeyboardState KeyState = Keyboard.GetState();
 
-            //Change through exersizes using the 'left' and 'right' keys
-            if (KeyState.IsKeyDown(Keys.Right)) 
+            //Change through exersizes using the 'up' and 'down' keys
+            if (KeyState.IsKeyDown(Keys.Up)) 
             { 
                 timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 1) % 9;} 
             }
-            if (KeyState.IsKeyDown(Keys.Left)) 
+            if (KeyState.IsKeyDown(Keys.Down)) 
             { 
                 timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 8) % 9; } 
             }
-            if (KeyState.IsKeyUp(Keys.Right) && KeyState.IsKeyUp(Keys.Left)){ timer = 0 ;}
+            if (KeyState.IsKeyUp(Keys.Up) && KeyState.IsKeyUp(Keys.Down)){ timer = 0 ;}
 
+            //Change Rotation using  the 'left' and 'right' keys
+            if (KeyState.IsKeyDown(Keys.Left))
+            {
+                rotationAmount = rotationAmount + timeStep/100;
+            }
+
+            if (KeyState.IsKeyDown(Keys.Right))
+            {
+                rotationAmount = rotationAmount - timeStep/100;
+            }
 
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
@@ -201,9 +213,12 @@ namespace GraphicsPractical2
             // Set the world transform (default to 10 but different for exercise 2.4)
             Matrix World1 = Matrix.CreateScale(10.0f);
             Matrix World2 = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
+            Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
+            World1 = Rotate * World1;
+            World2 = Rotate * World2;
             if (ExNr != 5){effect.Parameters["World"].SetValueTranspose(World1);} else {effect.Parameters["World"].SetValue(World2);}
             if (ExNr != 5){effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World1));} else {effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World2));}
-             
+
             //Set Parameters for lighting (depending on exercise number)
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());

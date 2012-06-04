@@ -100,7 +100,8 @@ float4 LambertianShading(float3 normal, float3 position, float4 Color)
 {
 	// The World2 matrix is used for transforming the normals properly in the same way the world is transformed
 	float4x4 rotationAndScale = World2;
-	normal = normalize(mul(rotationAndScale, normal));
+	normal = normalize(normal);
+	normal = normalize(mul( rotationAndScale, normal));
 
 	// The three lighting factors are calculated seperatly
 	// Ambient light is just a constant
