@@ -138,7 +138,8 @@ namespace GraphicsPractical2
             quadTransform = Matrix.CreateScale(scale);
         }
 
-         private void DrawText()
+        //draws exersize number for different renderings
+        private void DrawText()
         {
             string Nr = "none";
              if (ExNr == 0) {Nr = "1.1";}
@@ -160,7 +161,7 @@ namespace GraphicsPractical2
             //Keyboard usage
             KeyboardState KeyState = Keyboard.GetState();
 
-
+            //Change through exersizes using the 'left' and 'right' keys
             if (KeyState.IsKeyDown(Keys.Right)) 
             { 
                 timer = timer + 1; if (timer == 1) {ExNr = (ExNr + 1) % 9;} 
@@ -197,14 +198,13 @@ namespace GraphicsPractical2
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
 
+            // Set the world transform (default to 10 but different for exercise 2.4)
             Matrix World1 = Matrix.CreateScale(10.0f);
             Matrix World2 = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
             if (ExNr != 5){effect.Parameters["World"].SetValueTranspose(World1);} else {effect.Parameters["World"].SetValue(World2);}
             if (ExNr != 5){effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World1));} else {effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World2));}
              
-            //Material effecten of zo
-            //modelMaterial.SetEffectParameters(effect);
-
+            //Set Parameters for lighting (depending on exercise number)
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             if (ExNr > 2) { effect.Parameters["AmbientIntensity"].SetValue(0.2f); } else { effect.Parameters["AmbientIntensity"].SetValue(0.0f); }
@@ -223,21 +223,23 @@ namespace GraphicsPractical2
             effect.Parameters["Mapping"].SetValue(normalMapping);
             effect.Parameters["quadTransform"].SetValue(quadTransform);
 
-            //set effecten voor model
+            //set effects for model
             effect.Parameters["Shading"].SetValue(true);
             effect.Parameters["Move"].SetValue(new Vector4(0, 0, 0, 0));
+
             // Draw the model
             mesh.Draw();
 
-            //set effecten voor underground
-
+            //set effects for underground
             effect.CurrentTechnique = effect.Techniques["Simple2"];
             effect.Parameters["Shading"].SetValue(false);
             effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
             effect.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
             effect.Parameters["AmbientIntensity"].SetValue(0.0f);
             effect.Parameters["SpecularIntensity"].SetValue(0.0f);
-            if (ExNr > 7) { effect.Parameters["BumpMapping"].SetValue(true); } else { effect.Parameters["BumpMapping"].SetValue(false); }
+            
+            //Add normal mapping
+            if (ExNr > 7) { effect.Parameters["NormalMapping"].SetValue(true); } else { effect.Parameters["NormalMapping"].SetValue(false); }
             if (ExNr > 5)
             {
             foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
@@ -245,21 +247,21 @@ namespace GraphicsPractical2
 
             device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, quadVertices, 0, 4, quadIndices, 0, 2);
             }
-            device.SetRenderTarget(null);
 
+
+            device.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
-            if (ExNr > 6) { postEffect.Parameters["Gamma"].SetValue(1.5f); }
+            if (ExNr == 7) { postEffect.Parameters["Gamma"].SetValue(1.5f); }
             else { postEffect.Parameters["Gamma"].SetValue(1.0f); }
 
-                spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
 
-            DrawText();
+            DrawText(); //draw exercise number
             spriteBatch.End();
-            //tot hier underground
 
-            //moet altijd worden getekend
+            //Draw gameTime
             base.Draw(gameTime);
         }
     }

@@ -1,5 +1,6 @@
 texture ScreenTexture;
 
+// Gamma value to be set up front
 float Gamma;
 
 sampler TextureSampler = sampler_state
@@ -9,6 +10,7 @@ sampler TextureSampler = sampler_state
  
 float4 PixelShaderFunction(float2 TextureCoordinate : TEXCOORD0) : COLOR0
 {
+	// Calculate new color using a gamma correction
     float4 color = tex2D(TextureSampler, TextureCoordinate);
 	color.r = pow(color.r,Gamma);
 	color.g = pow(color.g,Gamma);

@@ -9,16 +9,16 @@
 
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World, World2, quadTransform;
+// Input variable set up front
 float4 DiffuseColor, AmbientColor, SpecularColor, Move;
 float AmbientIntensity, SpecularIntensity, SpecularPower;
-bool Shading, Ex11, Ex12, Ex21, BumpMapping;
+bool Shading, Ex11, Ex12, Ex21, NormalMapping;
+// Textures
 Texture Texture, Mapping;
 
 //---------------------------------- Input / Output structures ----------------------------------
 
-// Each member of the struct has to be given a "semantic", to indicate what kind of data should go in
-// here and how it should be treated. Read more about the POSITION0 and the many other semantics in 
-// the MSDN library
+// Input of the Vertex Shader
 struct VertexShaderInput
 {
 	float4 Position3D : POSITION0;
@@ -29,12 +29,6 @@ struct VertexShaderInput
 
 // The output of the vertex shader. After being passed through the interpolator/rasterizer it is also 
 // the input of the pixel shader. 
-// Note 1: The values that you pass into this struct in the vertex shader are not the same as what 
-// you get as input for the pixel shader. A vertex shader has a single vertex as input, the pixel 
-// shader has 3 vertices as input, and lets you determine the color of each pixel in the triangle 
-// defined by these three vertices. Therefor, all the values in the struct that you get as input for 
-// the pixel shaders have been linearly interpolated between there three vertices!
-// Note 2: You cannot use the data with the POSITION0 semantic in the pixel shader.
 struct VertexShaderOutput
 {
 	float4 Position2D : POSITION0;
@@ -45,7 +39,7 @@ struct VertexShaderOutput
 
 //------------------------------------------ Functions ------------------------------------------
 
-// Texture sampler
+// Texture samplers
 sampler2D TextureSampler = 
 sampler_state
 {
@@ -64,7 +58,8 @@ sampler_state
     MagFilter = LINEAR;
 };
 
-// Implement the Coloring using normals assignment here
+// The Coloring using normals assignment is implemented here
+// simply returns the normals
 float4 NormalColor(float3 normal)
 {
 	//VertexShaderOutput input = (VertexShaderInput);
@@ -73,7 +68,7 @@ float4 NormalColor(float3 normal)
 	return color;
 }
 
-// Implement the Procedural texturing assignment here
+// The Procedural texturing assignment is implemented here
 float3 ProceduralColor(VertexShaderOutput input)
 {
 	if (sin(Pi*input.Position3D.x/0.15)>0)
@@ -100,22 +95,30 @@ float3 ProceduralColor(VertexShaderOutput input)
 	}
 }
 
+// Shading is done here
 float4 LambertianShading(float3 normal, float3 position, float4 Color)
 {
+	// The World2 matrix is used for transforming the normals properly in the same way the world is transformed
 	float4x4 rotationAndScale = World2;
-	normal = normalize(normal);
 	normal = normalize(mul(rotationAndScale, normal));
+
+	// The three lighting factors are calculated seperatly
+	// Ambient light is just a constant
 	float4 ambient = mul(AmbientIntensity,AmbientColor);
+
+	// Diffuse light is dependant on the orientation of the incident light and the normal of the surface
 	float4 diffuse = max(0,dot(normalize( normal),normalize(LightSource-position)))*Color;
-	float3 reflection = -normalize(LightSource-position) + 2* dot(normalize(LightSource-position),normal) * normal;
-	// Phong shading
+
+	// Phong shading --Obsolete, but kept for reference
+	//float3 reflection = -normalize(LightSource-position) + 2* dot(normalize(LightSource-position),normal) * normal;
 	// float4 specular = SpecularColor * pow(max(0.00001f,dot(normalize(float3(0,50,100)-position),normalize(reflection))),SpecularPower) * SpecularIntensity;
 
-	//Blinn Phong
+	//Blinn Phong Used to calculate the specular component
 	float3 half_vector = normalize(float3(0,50,100) + (LightSource-position));
 	float  HdotN = max( 0.00001f, dot( half_vector,  normal) );
 	float4 specular = SpecularColor * pow( HdotN, SpecularPower ) * SpecularIntensity;
 
+	//All lighting is combined
 	float4 color = ambient + diffuse + specular;
 	color.a = 1;
 	return color;
@@ -133,7 +136,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 	worldPosition = mul(input.Position3D+Move, World);
     float4 viewPosition  = mul(worldPosition, View);
 
-	//fill the output
+	//fill the output (simply pass certain variables)
 	output.Position3D    = input.Position3D+Move;
 	output.Position2D    = mul(viewPosition, Projection);
 	output.normal        = input.normal;
@@ -143,6 +146,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
+	//Select between coloring methods
 	if (Ex11)
 	{
 		float4 color = NormalColor(input.normal);
@@ -171,6 +175,8 @@ technique Simple
 }
 
 //---------------------------------------- Technique: Simple2 ----------------------------------------
+// Technique used for adding texture
+
 VertexShaderOutput Simple2VertexShader(VertexShaderInput input)
 {
 	// Allocate an empty output struct
@@ -180,7 +186,8 @@ VertexShaderOutput Simple2VertexShader(VertexShaderInput input)
 	float4 worldPosition;
 	worldPosition = mul(input.Position3D+Move, quadTransform);
     float4 viewPosition  = mul(worldPosition, View);
-	//fill the output
+
+	//fill the output (simply pass certain variables)
 	output.Position3D    = input.Position3D+Move;
 	output.Position2D    = mul(viewPosition, Projection);
 	output.normal        = input.normal;
@@ -188,20 +195,24 @@ VertexShaderOutput Simple2VertexShader(VertexShaderInput input)
 	return output;
 }
 
+// Textures the surface
 float4 Simple2PixelShader(VertexShaderOutput input) : COLOR0
 {
-	if (BumpMapping)
+	if (NormalMapping)
 	{
-	float4 color = tex2D(TextureSampler,input.TextureCoordinate.xy);
-	float4 adjust = tex2D(BumpMap,input.TextureCoordinate.xy);
+		//Uses normal mapping to add the illusion off height differences
+		float4 color = tex2D(TextureSampler,input.TextureCoordinate.xy);
+		float4 adjust = tex2D(BumpMap,input.TextureCoordinate.xy);
 	
-	color = LambertianShading(input.normal+(2*adjust.xyz-1), input.Position3D, color);
+		//Apply shading to the model
+		color = LambertianShading(input.normal+(2*adjust.xyz-1), input.Position3D, color);
 
-	return color;
+		return color;
 	}
 	else
 	{
-	return tex2D(TextureSampler,input.TextureCoordinate.xy);
+		//simply paste the texture on the model
+		return tex2D(TextureSampler,input.TextureCoordinate.xy);
 	}
 
 }
