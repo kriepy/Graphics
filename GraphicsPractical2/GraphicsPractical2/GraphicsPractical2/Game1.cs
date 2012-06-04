@@ -197,9 +197,11 @@ namespace GraphicsPractical2
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
 
-            Matrix World = Matrix.CreateScale(10.0f);//, 6.5f, 2.5f);
-            effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World));
-            effect.Parameters["World"].SetValue(World);
+            Matrix World1 = Matrix.CreateScale(10.0f);
+            Matrix World2 = Matrix.CreateScale(10.0f, 6.5f, 2.5f);
+            if (ExNr != 5){effect.Parameters["World"].SetValueTranspose(World1);} else {effect.Parameters["World"].SetValue(World2);}
+            if (ExNr != 5){effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World1));} else {effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World2));}
+             
             //Material effecten of zo
             //modelMaterial.SetEffectParameters(effect);
 
@@ -232,7 +234,10 @@ namespace GraphicsPractical2
             effect.CurrentTechnique = effect.Techniques["Simple2"];
             effect.Parameters["Shading"].SetValue(false);
             effect.Parameters["Move"].SetValue(new Vector4(0, -0.5f, 0, 0));
+            effect.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
             effect.Parameters["AmbientIntensity"].SetValue(0.0f);
+            effect.Parameters["SpecularIntensity"].SetValue(0.0f);
+            if (ExNr > 7) { effect.Parameters["BumpMapping"].SetValue(true); } else { effect.Parameters["BumpMapping"].SetValue(false); }
             if (ExNr > 5)
             {
             foreach (EffectPass pass in effect.CurrentTechnique.Passes) { pass.Apply(); }
@@ -245,9 +250,10 @@ namespace GraphicsPractical2
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
-            postEffect.Parameters["Gamma"].SetValue(1.0f);
+            if (ExNr > 6) { postEffect.Parameters["Gamma"].SetValue(1.5f); }
+            else { postEffect.Parameters["Gamma"].SetValue(1.0f); }
 
-            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
+                spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
 
             DrawText();
             spriteBatch.End();
