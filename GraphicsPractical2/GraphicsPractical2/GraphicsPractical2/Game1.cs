@@ -216,7 +216,7 @@ namespace GraphicsPractical2
             Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
             World1 = Rotate * World1;
             World2 = Rotate * World2;
-            if (ExNr != 5){effect.Parameters["World"].SetValueTranspose(World1);} else {effect.Parameters["World"].SetValue(World2);}
+            if (ExNr != 5){effect.Parameters["World"].SetValue(World1);} else {effect.Parameters["World"].SetValue(World2);}
             if (ExNr != 5){effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World1));} else {effect.Parameters["World2"].SetValueTranspose(Matrix.Invert(World2));}
 
             //Set Parameters for lighting (depending on exercise number)
@@ -252,6 +252,7 @@ namespace GraphicsPractical2
             effect.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
             effect.Parameters["AmbientIntensity"].SetValue(0.0f);
             effect.Parameters["SpecularIntensity"].SetValue(0.0f);
+            effect.Parameters["World2"].SetValue(Matrix.Identity);
             
             //Add normal mapping
             if (ExNr > 7) { effect.Parameters["NormalMapping"].SetValue(true); } else { effect.Parameters["NormalMapping"].SetValue(false); }
