@@ -11,74 +11,104 @@ using Microsoft.Xna.Framework.Media;
 
 namespace GraphicsPractical3
 {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
+
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        // Often used XNA objects
+        GraphicsDevice device;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        FrameRateCounter frameRateCounter;
+
+        // Game objects and variables
+        Camera camera;
+
+        // Model
+        Model model;
+
+        //Writing into the screen
+        SpriteFont font;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            // Create and add a frame rate counter
+            frameRateCounter = new FrameRateCounter(this);
+            Components.Add(frameRateCounter);
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
+
+
+
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            device = graphics.GraphicsDevice;
+
+            // Set up the window
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.IsFullScreen = false;
+            // Let the renderer draw and update as often as possible
+            graphics.SynchronizeWithVerticalRetrace = false;
+            this.IsFixedTimeStep = false;
+            // Flush the changes to the device parameters to the graphics card
+            graphics.ApplyChanges();
+            // Initialize the camera
+            camera = new Camera(new Vector3(0, 50, 100), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            // initialize render target
+            //renderTarget = new RenderTarget2D(device, device.PresentationParameters.BackBufferWidth, 
+            //device.PresentationParameters.BackBufferHeight, false, device.PresentationParameters.BackBufferFormat,
+               // DepthFormat.Depth24);
+
+            IsMouseVisible = true;
 
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+
+
+
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            Effect effect = Content.Load<Effect>("Effects/NietSimple");
+            model = Content.Load<Model>("Models/femalehead");
+            model.Meshes[0].MeshParts[0].Effect = effect;
+            //font
+            font = Content.Load<SpriteFont>("myFont");
+
+
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
+
+
+
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+
+
+
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            // Update the window title
+            Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
 
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+
+
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
