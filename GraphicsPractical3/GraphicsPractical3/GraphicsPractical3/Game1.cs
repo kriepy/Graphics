@@ -21,6 +21,7 @@ namespace GraphicsPractical3
 
         // Game objects and variables
         Camera camera;
+        Vector3 camEye = new Vector3(0, 50, 300);
 
         // Model
         Model model;
@@ -59,7 +60,7 @@ namespace GraphicsPractical3
             // Flush the changes to the device parameters to the graphics card
             graphics.ApplyChanges();
             // Initialize the camera
-            camera = new Camera(new Vector3(0, 50, -300), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            camera = new Camera(camEye, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
 
             IsMouseVisible = true;
 
@@ -112,10 +113,21 @@ namespace GraphicsPractical3
             Effect effect = mesh.Effects[0];
 
             // Set the effect parameters
+            effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
             effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
+            effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
+            effect.Parameters["AmbientIntensity"].SetValue(0.3f);
+            effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
+            effect.Parameters["Eye"].SetValue(camEye);
+            
+            
+            //modelMaterial.SetEffectParameters(Color.Red.ToVector4());
+
+            //effect.Parameters["Material"].SetValue(modelMaterial.AmbientColor);
+
             // Draw the model
             mesh.Draw();
 
