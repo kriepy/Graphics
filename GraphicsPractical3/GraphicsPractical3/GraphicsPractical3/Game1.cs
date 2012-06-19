@@ -11,23 +11,26 @@ using Microsoft.Xna.Framework.Media;
 
 namespace GraphicsPractical3
 {
-
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         // Often used XNA objects
-        GraphicsDevice device;
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        FrameRateCounter frameRateCounter;
+        GraphicsDevice          device;
+        GraphicsDeviceManager   graphics;
+        SpriteBatch             spriteBatch;
+        FrameRateCounter        frameRateCounter;
 
         // Game objects and variables
         Camera camera;
 
         // Model
         Model model;
+        Material modelMaterial;
 
-        //Writing into the screen
-        SpriteFont font;
+        // Quad
+        VertexPositionNormalTexture[] quadVertices;
+        short[] quadIndices;
+        Matrix quadTransform;
+
 
         public Game1()
         {
@@ -44,7 +47,8 @@ namespace GraphicsPractical3
         protected override void Initialize()
         {
             device = graphics.GraphicsDevice;
-
+            // Copy over the device's rasterizer state to change the current fillMode
+            device.RasterizerState = new RasterizerState() { CullMode = CullMode.None };
             // Set up the window
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
@@ -55,11 +59,7 @@ namespace GraphicsPractical3
             // Flush the changes to the device parameters to the graphics card
             graphics.ApplyChanges();
             // Initialize the camera
-            camera = new Camera(new Vector3(0, 50, 100), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-            // initialize render target
-            //renderTarget = new RenderTarget2D(device, device.PresentationParameters.BackBufferWidth, 
-            //device.PresentationParameters.BackBufferHeight, false, device.PresentationParameters.BackBufferFormat,
-               // DepthFormat.Depth24);
+            camera = new Camera(new Vector3(0, 50, -300), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
 
             IsMouseVisible = true;
 
@@ -71,34 +71,27 @@ namespace GraphicsPractical3
 
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            // Create a SpriteBatch object
+            spriteBatch = new SpriteBatch(device);
+            // Load the "Simple" effect
             Effect effect = Content.Load<Effect>("Effect/NietSimple");
+            // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
             model.Meshes[0].MeshParts[0].Effect = effect;
+            // Setup the quad
+            //SetupQuad();
+
             //font
-            font = Content.Load<SpriteFont>("myFont");
-
-
+            //font = Content.Load<SpriteFont>("myFont");
         }
 
-
-
-
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
 
 
 
 
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
 
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
@@ -111,9 +104,20 @@ namespace GraphicsPractical3
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            // Clear the screen in a predetermined color and clear the depth buffer
+            device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
 
-            // TODO: Add your drawing code here
+            // Get the model's only mesh
+            ModelMesh mesh = model.Meshes[0];
+            Effect effect = mesh.Effects[0];
+
+            // Set the effect parameters
+            effect.CurrentTechnique = effect.Techniques["Simple"];
+            // Matrices for 3D perspective projection
+            camera.SetEffectParameters(effect);
+            effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
+            // Draw the model
+            mesh.Draw();
 
             base.Draw(gameTime);
         }
