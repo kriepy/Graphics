@@ -111,23 +111,18 @@ namespace GraphicsPractical3
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
-
             // Set the effect parameters
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             effect.CurrentTechnique = effect.Techniques["Simple"];
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
+
             effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientIntensity"].SetValue(0.3f);
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["Eye"].SetValue(camEye);
-            
-            
-            //modelMaterial.SetEffectParameters(Color.Red.ToVector4());
-
-            //effect.Parameters["Material"].SetValue(modelMaterial.AmbientColor);
-
+            effect.Parameters["World"].SetValue(Matrix.CreateScale(5.0f));
             // Draw the model
             mesh.Draw();
 
