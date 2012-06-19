@@ -21,7 +21,7 @@ namespace GraphicsPractical3
 
         // Game objects and variables
         Camera camera;
-        Vector3 camEye = new Vector3(0, 50, 300);
+        Vector3 camEye = new Vector3(0, 50, 200);
 
         // Model
         Model model;
@@ -31,6 +31,9 @@ namespace GraphicsPractical3
         VertexPositionNormalTexture[] quadVertices;
         short[] quadIndices;
         Matrix quadTransform;
+
+        //   for rotation
+        float rotationAmount = 0;
 
 
         public Game1()
@@ -94,6 +97,20 @@ namespace GraphicsPractical3
         {
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
 
+            //Keyboard usage
+            KeyboardState KeyState = Keyboard.GetState();
+
+            //Change Rotation using  the 'left' and 'right' keys
+            if (KeyState.IsKeyDown(Keys.Left))
+            {
+                rotationAmount = rotationAmount + timeStep / 100;
+            }
+
+            if (KeyState.IsKeyDown(Keys.Right))
+            {
+                rotationAmount = rotationAmount - timeStep / 100;
+            }
+
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
 
@@ -107,6 +124,9 @@ namespace GraphicsPractical3
         {
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
+            Matrix World1 = Matrix.CreateScale(3.0f);
+            Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
+            World1 = Rotate * World1;
 
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
@@ -117,12 +137,14 @@ namespace GraphicsPractical3
             // Matrices for 3D perspective projection
             camera.SetEffectParameters(effect);
 
+            
+            //modelMaterial.SetEffectParameters(effect);
             effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["AmbientIntensity"].SetValue(0.3f);
             effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
             effect.Parameters["Eye"].SetValue(camEye);
-            effect.Parameters["World"].SetValue(Matrix.CreateScale(5.0f));
+            effect.Parameters["World"].SetValue(World1);
             // Draw the model
             mesh.Draw();
 
