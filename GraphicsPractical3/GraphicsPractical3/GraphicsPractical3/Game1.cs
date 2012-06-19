@@ -74,8 +74,8 @@ namespace GraphicsPractical3
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Effect effect = Content.Load<Effect>("Effects/NietSimple");
-            model = Content.Load<Model>("Models/femalehead");
+            Effect effect = Content.Load<Effect>("Effect/NietSimple");
+            model = Content.Load<Model>("Model/femalehead");
             model.Meshes[0].MeshParts[0].Effect = effect;
             //font
             font = Content.Load<SpriteFont>("myFont");
