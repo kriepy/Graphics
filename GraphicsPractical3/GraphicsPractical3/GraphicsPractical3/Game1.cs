@@ -111,6 +111,7 @@ namespace GraphicsPractical3
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
+            
             // Set the effect parameters
             effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
             effect.CurrentTechnique = effect.Techniques["Simple"];
