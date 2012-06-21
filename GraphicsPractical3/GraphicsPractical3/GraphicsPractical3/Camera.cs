@@ -22,7 +22,7 @@ namespace GraphicsPractical3
             eye = camEye;
             focus = camFocus;
 
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1.0f, 300.0f);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1.0f, 900.0f);
             UpdateViewMatrix();
         }
 

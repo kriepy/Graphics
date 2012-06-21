@@ -24,6 +24,7 @@ namespace GraphicsPractical3
         Vector3 camEye = new Vector3(0, 50, 300);
 
         // Model
+        Effect[] effect = new Effect[2];
         Model model;
         Material modelMaterial;
 
@@ -32,6 +33,9 @@ namespace GraphicsPractical3
         short[] quadIndices;
         Matrix quadTransform;
 
+        //   for rotation
+        float rotationAmount = 0;
+        int ExcNum = 1;
 
         public Game1()
         {
@@ -75,10 +79,12 @@ namespace GraphicsPractical3
             // Create a SpriteBatch object
             spriteBatch = new SpriteBatch(device);
             // Load the "Simple" effect
-            Effect effect = Content.Load<Effect>("Effect/NietSimple");
+            effect[0] = Content.Load<Effect>("Effect/CookTorrance");
+            //effect[1] = Content.Load<Effect>("Effect/SpotLight");
+            effect[1] = Content.Load<Effect>("Effect/MultiLight");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
-            model.Meshes[0].MeshParts[0].Effect = effect;
+            
             // Setup the quad
             //SetupQuad();
 
@@ -92,7 +98,22 @@ namespace GraphicsPractical3
 
         protected override void Update(GameTime gameTime)
         {
+            model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
+
+            //Keyboard usage
+            KeyboardState KeyState = Keyboard.GetState();
+
+            //Change Rotation using  the 'left' and 'right' keys
+            if (KeyState.IsKeyDown(Keys.Left))
+            {
+                rotationAmount = rotationAmount + timeStep / 100;
+            }
+
+            if (KeyState.IsKeyDown(Keys.Right))
+            {
+                rotationAmount = rotationAmount - timeStep / 100;
+            }
 
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
@@ -107,23 +128,38 @@ namespace GraphicsPractical3
         {
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
+            Matrix World = Matrix.CreateScale(3.0f);
+            Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
+            World = Rotate * World;
 
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
             
-            // Set the effect parameters
-            effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
-            effect.CurrentTechnique = effect.Techniques["Simple"];
-            // Matrices for 3D perspective projection
-            camera.SetEffectParameters(effect);
+            switch (ExcNum)
+            {
+                case 0:
+                    // Set the effect parameters
+                    effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
+                    effect.CurrentTechnique = effect.Techniques["Simple"];
+                    // Matrices for 3D perspective projection
+                    camera.SetEffectParameters(effect);
 
-            effect.Parameters["World"].SetValue(Matrix.CreateScale(10.0f));
-            effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
-            effect.Parameters["AmbientIntensity"].SetValue(0.3f);
-            effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
-            effect.Parameters["Eye"].SetValue(camEye);
-            effect.Parameters["World"].SetValue(Matrix.CreateScale(5.0f));
+            
+                    //modelMaterial.SetEffectParameters(effect);
+                    effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
+                    effect.Parameters["AmbientIntensity"].SetValue(0.3f);
+                    effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
+                    effect.Parameters["Eye"].SetValue(camEye);
+                    effect.Parameters["World"].SetValue(World);
+                    effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));     
+                    break;
+                case 1:
+                    effect.Parameters["World"].SetValue(World);
+                    camera.SetEffectParameters(effect);
+                    break;
+                    // do nothing for now
+            }
             // Draw the model
             mesh.Draw();
 
