@@ -1,12 +1,13 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
-#define LightSource (0,0,10)
-#define LightSource2 (-10,20,-80)
+#define MAX_LIGHTS 3
 
 //------------------------------------- Top Level Variables -------------------------------------
 float4x4 World, View, Projection, InvTransWorld;
-float4 DiffuseColor,LightColor, LightColor2;
+float4 DiffuseColor;
+float4 LightColors[MAX_LIGHTS];
+float3 LightPositions[MAX_LIGHTS];
 
 // TODO: add effect parameters here.
 
@@ -44,13 +45,14 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
 	float3 N = normalize(mul(input.normal, InvTransWorld));
-	float3 L = normalize(LightSource - input.Position3D);
-	float3 L2 = normalize(LightSource2 - input.Position3D);
-
-	float4 diffuse = max(0,dot(N,L))*LightColor*DiffuseColor;
-	float4 diffuse2 = max(0,dot(N,L2))*LightColor2*DiffuseColor;
+	float4 diffuse = float4(0.0f,0.0f,0.0f,0.0f);
+	for (int i = 0; i < MAX_LIGHTS; i++)
+	{
+		float3 L = normalize(LightPositions[i] - input.Position3D);
+		diffuse += max(0,dot(N,L))*LightColors[i]*DiffuseColor;
+	}
     // TODO: add your pixel shader code here.
-    return diffuse+diffuse2;
+    return diffuse;
 }
 
 technique MultiLight

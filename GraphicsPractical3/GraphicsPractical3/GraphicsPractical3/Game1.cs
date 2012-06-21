@@ -156,8 +156,16 @@ namespace GraphicsPractical3
                     break;
                 case 1:
                     effect.CurrentTechnique = effect.Techniques["MultiLight"];
-                    effect.Parameters["LightColor"].SetValue(Color.Red.ToVector4());
-                    effect.Parameters["LightColor2"].SetValue(Color.Blue.ToVector4());
+                    Vector4[] lightColors = new Vector4[3];
+                    lightColors[0] = Color.Red.ToVector4();
+                    lightColors[1] = Color.Blue.ToVector4();
+                    lightColors[2] = Color.Green.ToVector4();
+                    Vector3[] lightPositions = new Vector3[3];
+                    lightPositions[0] = new Vector3(0, 0, 10);
+                    lightPositions[1] = new Vector3(10, -20, 80);
+                    lightPositions[2] = new Vector3(10, 40, 80);
+                    effect.Parameters["LightPositions"].SetValue(lightPositions);
+                    effect.Parameters["LightColors"].SetValue(lightColors);
                     effect.Parameters["World"].SetValue(World);
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
                     effect.Parameters["DiffuseColor"].SetValue(Color.White.ToVector4());
