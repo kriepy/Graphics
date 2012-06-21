@@ -155,7 +155,12 @@ namespace GraphicsPractical3
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));     
                     break;
                 case 1:
+                    effect.CurrentTechnique = effect.Techniques["MultiLight"];
+                    effect.Parameters["LightColor"].SetValue(Color.Red.ToVector4());
+                    effect.Parameters["LightColor2"].SetValue(Color.Blue.ToVector4());
                     effect.Parameters["World"].SetValue(World);
+                    effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
+                    effect.Parameters["DiffuseColor"].SetValue(Color.White.ToVector4());
                     camera.SetEffectParameters(effect);
                     break;
                     // do nothing for now
