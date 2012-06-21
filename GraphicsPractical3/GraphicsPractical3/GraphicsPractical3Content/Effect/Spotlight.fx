@@ -2,8 +2,8 @@
 
 #define Pi 3.14159265
 #define LightSource (50,50,50)
-#define Phi 0.5
-#define Theta 0.2
+#define Phi 0.0005
+#define Theta 0.0005
 #define falloff 1 //kan tussen 0.5 en 1.75 liggen
 #define L (1,2,6)
 
@@ -76,7 +76,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 	float NdotL = max( 0.0f, dot( normal, vLight ) );
 	float3 dif = DiffuseColor.xyz;
-	output.normal = float4(NdotL* fSpotAtten*dif,1.0f);
+	output.normal = float4(fSpotAtten*dif,1.0f);
 
 
 	return output;
