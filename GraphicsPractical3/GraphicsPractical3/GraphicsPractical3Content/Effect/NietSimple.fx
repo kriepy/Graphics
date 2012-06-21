@@ -66,7 +66,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
     // TODO: add your pixel shader code here.
-	//normal = normalize(mul(normal, rotationAndScale));
+	normal = normalize(mul(normal, rotationAndScale));
 
 	float3 E = normalize(Eye - input.Position3D);
 	float3 L = normalize(LightSource - input.Position3D);
