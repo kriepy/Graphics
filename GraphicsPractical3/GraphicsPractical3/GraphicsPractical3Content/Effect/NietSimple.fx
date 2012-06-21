@@ -8,9 +8,10 @@
 // Top level variables can and have to be set at runtime
 
 // Matrices for 3D perspective projection 
-float4x4 View, Projection, World;
+float4x4 View, Projection, World, rotationAndScale;
 float4 AmbientColor, DiffuseColor;
 float3 Eye;
+
 float AmbientIntensity;
 
 //---------------------------------- Input / Output structures ----------------------------------
@@ -66,7 +67,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
     // TODO: add your pixel shader code here.
-	//normal = normalize(mul(normal, rotationAndScale));
+    normal = normalize(mul(normal, rotationAndScale));
 
 	float3 E = normalize(Eye - input.Position3D);
 	float3 L = normalize(LightSource - input.Position3D);
@@ -102,3 +103,5 @@ technique Simple
 		PixelShader  = compile ps_3_0 SimplePixelShader();
 	}
 }
+
+
