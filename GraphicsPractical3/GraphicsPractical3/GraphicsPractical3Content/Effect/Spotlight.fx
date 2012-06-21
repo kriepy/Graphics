@@ -13,9 +13,8 @@
 
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World, InvTransWorld;
-float4 AmbientColor, DiffuseColor;
+float4  DiffuseColor;
 float3 Eye;
-float AmbientIntensity;
 
 //---------------------------------- Input / Output structures ----------------------------------
 
@@ -30,7 +29,7 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
 	float4 Position2D : POSITION0;
-	float3 normal : TEXCOORD0;
+	float4 normal : TEXCOORD0;
 	float4 Position3D : TEXCOORD1;
 };
 
@@ -43,7 +42,7 @@ struct VertexShaderOutput
 
 //---------------------------------------- Technique: Spotlight ----------------------------------------
 
-VertexShaderOutput VertexShader(VertexShaderInput input)
+VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
 	// Allocate an empty output struct
 	VertexShaderOutput output = (VertexShaderOutput)0;
@@ -53,16 +52,16 @@ VertexShaderOutput VertexShader(VertexShaderInput input)
     float4 viewPosition  = mul(worldPosition, View);
 	output.Position2D    = mul(viewPosition, Projection);
 
-	normal = normalize(mul(normal, rotationAndScale));
+	float3 normal = normalize(mul(input.normal, InvTransWorld));
 
-	float fDistance = distance( worldPosition, LightSource );
-	float fLinearAtten = lerp( 1.0f, 0.0f, fDistance / fLightRange );
+	//float fDistance = distance( worldPosition, LightSource );
+	//float fLinearAtten = lerp( 1.0f, 0.0f, fDistance / fLightRange );
 
 	// Compute the direction to the light
-    float3 vLight = normalize( LightSource - pWorld );
+    float3 vLight = normalize( LightSource - worldPosition );
 	float3 LightDirection = normalize(LightSource);
 
-	float cosAlpha      = max( 0.0f, dot( vLight, -LightDirection ) );
+	float cosAlpha      = max( 0.0f, dot( vLight, LightDirection ) );
 
 	    float fSpotAtten = 0.0f; // default value simplifies branch:
     if( cosAlpha > Theta )
@@ -74,15 +73,17 @@ VertexShaderOutput VertexShader(VertexShaderInput input)
         fSpotAtten = pow( (cosAlpha - Phi) / (Theta - Phi), falloff );
     }
 
-	output.color = float4(fSpotAtten*DiffuseColor,1.0f);
+	float NdotL = max( 0.0f, dot( normal, vLight ) );
+	float3 dif = DiffuseColor.xyz;
+	output.normal = float4(NdotL* fSpotAtten*dif,1.0f);
 
 
 	return output;
 }
 
-float4 PixelShader(VertexShaderOutput input) : COLOR0
+float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
-	float4 color = NormalColor();
+	float4 color = input.normal;
 
 	return color;
 }
@@ -92,13 +93,13 @@ float4 PixelShader(VertexShaderOutput input) : COLOR0
 
 
 
-technique Technique1
+technique Spotlight
 {
     pass Pass1
     {
         // TODO: set renderstates here.
 
-        VertexShader = compile vs_3_0 VertexShader();
-        PixelShader = compile ps_3_0 PixelShader();
+        VertexShader = compile vs_3_0 VertexShaderFunction();
+        PixelShader = compile ps_3_0 PixelShaderFunction();
     }
 }
