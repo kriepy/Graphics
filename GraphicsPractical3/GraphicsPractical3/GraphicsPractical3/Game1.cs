@@ -24,7 +24,7 @@ namespace GraphicsPractical3
         Vector3 camEye = new Vector3(0, 50, 300);
 
         // Model
-        Effect[] effect = new Effect[2];
+        Effect[] effect = new Effect[3];
         Model model;
         Material modelMaterial;
 
@@ -35,7 +35,7 @@ namespace GraphicsPractical3
 
         //   for rotation
         float rotationAmount = 0;
-        int ExcNum = 1;
+        int ExcNum = 2;
 
         public Game1()
         {
@@ -80,8 +80,8 @@ namespace GraphicsPractical3
             spriteBatch = new SpriteBatch(device);
             // Load the "Simple" effect
             effect[0] = Content.Load<Effect>("Effect/CookTorrance");
-            //effect[1] = Content.Load<Effect>("Effect/SpotLight");
             effect[1] = Content.Load<Effect>("Effect/MultiLight");
+            effect[2] = Content.Load<Effect>("Effect/Spotlight");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
             
@@ -162,6 +162,15 @@ namespace GraphicsPractical3
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
                     effect.Parameters["DiffuseColor"].SetValue(Color.White.ToVector4());
                     camera.SetEffectParameters(effect);
+                    break;
+
+                case 2:
+                    effect.CurrentTechnique = effect.Techniques["Spotlight"];
+                    camera.SetEffectParameters(effect);
+                    effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
+                    effect.Parameters["Eye"].SetValue(camEye);
+                    effect.Parameters["World"].SetValue(World);
+                    effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
                     break;
                     // do nothing for now
             }
