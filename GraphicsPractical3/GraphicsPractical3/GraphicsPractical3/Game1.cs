@@ -14,18 +14,20 @@ namespace GraphicsPractical3
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         // Often used XNA objects
-        GraphicsDevice          device;
-        GraphicsDeviceManager   graphics;
-        SpriteBatch             spriteBatch;
-        FrameRateCounter        frameRateCounter;
+        GraphicsDevice device;
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+        FrameRateCounter frameRateCounter;
 
         // Game objects and variables
         Camera camera;
         Vector3 camEye = new Vector3(0, 0, 300);
 
         // Model
-        Effect[] effect = new Effect[3];
+        Effect[] effect = new Effect[4];
+        Effect effect2;
         Model model;
+        Model model2;
         Material modelMaterial;
 
         // Quad
@@ -35,7 +37,7 @@ namespace GraphicsPractical3
 
         //   for rotation
         float rotationAmount = 0;
-        int ExcNum = 1;
+        int ExcNum = 3;
 
         public Game1()
         {
@@ -81,10 +83,13 @@ namespace GraphicsPractical3
             // Load the "Simple" effect
             effect[0] = Content.Load<Effect>("Effect/CookTorrance");
             effect[1] = Content.Load<Effect>("Effect/Spotlight");
-            effect[2] = Content.Load<Effect>("Effect/MultiLight"); 
+            effect[2] = Content.Load<Effect>("Effect/MultiLight");
+            effect[3] = Content.Load<Effect>("Effect/CookTorrance");
+            effect2 = Content.Load<Effect>("Effect/CookTorrance");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
-            
+            model2 = Content.Load<Model>("Model/femalehead");
+
             // Setup the quad
             //SetupQuad();
 
@@ -99,6 +104,7 @@ namespace GraphicsPractical3
         protected override void Update(GameTime gameTime)
         {
             model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
+            model2.Meshes[0].MeshParts[0].Effect = effect2;
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
 
             //Keyboard usage
@@ -135,7 +141,7 @@ namespace GraphicsPractical3
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
-            Vector3 Light = new Vector3(0,0, 40);
+            Vector3 Light = new Vector3(0, 0, 40);
             switch (ExcNum)
             {
                 case 0:
@@ -145,16 +151,16 @@ namespace GraphicsPractical3
                     // Matrices for 3D perspective projection
                     camera.SetEffectParameters(effect);
 
-            
+
                     //modelMaterial.SetEffectParameters(effect);
-                    
+
                     effect.Parameters["LightSource"].SetValue(Light);
                     effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
                     effect.Parameters["AmbientIntensity"].SetValue(0.3f);
                     effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
                     effect.Parameters["Eye"].SetValue(camEye);
                     effect.Parameters["World"].SetValue(World);
-                    effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));     
+                    effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
                     break;
                 case 1:
                     effect.CurrentTechnique = effect.Techniques["Spotlight"];
@@ -185,13 +191,55 @@ namespace GraphicsPractical3
                     effect.Parameters["DiffuseColor"].SetValue(Color.White.ToVector4());
                     camera.SetEffectParameters(effect);
                     break;
+                case 3:
+                    Matrix World2 = Matrix.CreateScale(2.0f);
+                    Matrix Rotate2 = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
+                    Matrix Translate = Matrix.CreateTranslation(new Vector3(150, 0, 0));
+                    World2 = Rotate2 *  World2 * Translate;
 
-                    // do nothing for now
+                    ModelMesh mesh2 = model2.Meshes[0];
+                    effect = mesh2.Effects[0];
+
+
+
+
+
+                    effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
+                    effect.CurrentTechnique = effect.Techniques["Simple"];
+                    // Matrices for 3D perspective projection
+                    camera.SetEffectParameters(effect);
+
+
+                    //modelMaterial.SetEffectParameters(effect);
+
+                    effect.Parameters["LightSource"].SetValue(Light);
+                    effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
+                    effect.Parameters["AmbientIntensity"].SetValue(0.3f);
+                    effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
+                    effect.Parameters["Eye"].SetValue(camEye);
+                    effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
+
+
+                    effect.Parameters["World"].SetValue(World2);
+                    mesh2.Draw();
+                    effect.Parameters["World"].SetValue(World);
+                    break;
+
+                // do nothing for now
             }
             // Draw the model
             mesh.Draw();
 
             base.Draw(gameTime);
         }
+
+
+        //public BoundingSphere BoundingSphere
+        //{
+
+        //    get { return new BoundingSphere(Position, model.Meshes[0].BoundingSphere.Radius); }
+
+        //}
     }
+
 }
