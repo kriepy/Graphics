@@ -1,9 +1,7 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
-#define LightSource (50, 50, 200)
-#define Phi 0.5
-#define Theta 0.5
+
 #define falloff 1 //kan tussen 0.5 en 1.75 liggen
 
 
@@ -14,7 +12,8 @@
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World, InvTransWorld;
 float4  DiffuseColor;
-float3 Eye;
+float3 Eye, LightSource;
+float Phi, Theta;
 
 //---------------------------------- Input / Output structures ----------------------------------
 
@@ -58,7 +57,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	//float fLinearAtten = lerp( 1.0f, 0.0f, fDistance / fLightRange );
 
 	// Compute the direction to the light
-    float3 vLight = normalize( LightSource - worldPosition );
+    float3 vLight = normalize( LightSource - worldPosition.xyz);
+
 	float3 LightDirection = normalize(LightSource);
 
 	float cosAlpha      = max( 0.0f, dot( vLight, -LightDirection ) );
@@ -75,7 +75,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 	float NdotL = max( 0.0f, dot( normal, vLight ) );
 	float3 dif = DiffuseColor.xyz;
-	output.normal = float4(fSpotAtten*dif,1.0f);
+	output.normal = float4(NdotL*fSpotAtten*dif,1.0f);
 
 
 	return output;

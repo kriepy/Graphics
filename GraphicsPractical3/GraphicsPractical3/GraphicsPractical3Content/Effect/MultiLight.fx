@@ -51,7 +51,6 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 		float3 L = normalize(LightPositions[i] - input.Position3D);
 		diffuse += max(0,dot(N,L))*LightColors[i]*DiffuseColor;
 	}
-    // TODO: add your pixel shader code here.
     return diffuse;
 }
 

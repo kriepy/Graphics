@@ -21,7 +21,7 @@ namespace GraphicsPractical3
 
         // Game objects and variables
         Camera camera;
-        Vector3 camEye = new Vector3(0, 50, 300);
+        Vector3 camEye = new Vector3(0, 0, 300);
 
         // Model
         Effect[] effect = new Effect[3];
@@ -44,8 +44,10 @@ namespace GraphicsPractical3
         RenderTarget2D renderTarget;
 
         // For switching excersizes
-        int ExcNum = 2;
+        int ExcNum = 1;
         bool postGray = false;
+        bool Gpressed = false;
+        bool SpacePressed = false;
 
         public Game1()
         {
@@ -116,10 +118,7 @@ namespace GraphicsPractical3
 
         protected override void Update(GameTime gameTime)
         {
-            model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
-            bool Gpressed = false;
-            bool SpacePressed = false;
 
             //Keyboard usage
             KeyboardState KeyState = Keyboard.GetState();
@@ -133,7 +132,9 @@ namespace GraphicsPractical3
             if (KeyState.IsKeyDown(Keys.G))
             {
                 if (!Gpressed)
-                    postGray = true;
+                {
+                    postGray = !postGray;
+                }
                 Gpressed = true;
             }
             if (KeyState.IsKeyUp(Keys.G))
@@ -157,14 +158,16 @@ namespace GraphicsPractical3
 
             if (KeyState.IsKeyDown(Keys.Space))
             {
-                if (!SpacePressed)
-                    ExcNum = Math.Min((ExcNum + 1),2);
+                if (!SpacePressed) { ExcNum = (ExcNum + 1) % 3; }
                 SpacePressed = true;
             }
             if (KeyState.IsKeyUp(Keys.Space))
             {
                 SpacePressed = false;
             }
+
+            // Update Excersize
+            model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
 
@@ -180,7 +183,7 @@ namespace GraphicsPractical3
 
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
-            Matrix World = Matrix.CreateScale(3.0f);
+            Matrix World = Matrix.CreateScale(2.0f);
             Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
             Matrix Translate = Matrix.CreateTranslation(new Vector3(translationAmount * 1.0f, 0.0f, 0.0f));
             World = Rotate * Translate * World;
@@ -188,6 +191,7 @@ namespace GraphicsPractical3
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
+            Vector3 Light = new Vector3(0,0, 40);
 
             switch (ExcNum)
             {
@@ -200,6 +204,8 @@ namespace GraphicsPractical3
 
             
                     //modelMaterial.SetEffectParameters(effect);
+                    
+                    effect.Parameters["LightSource"].SetValue(Light);
                     effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
                     effect.Parameters["AmbientIntensity"].SetValue(0.3f);
                     effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
@@ -210,6 +216,9 @@ namespace GraphicsPractical3
                 case 1:
                     effect.CurrentTechnique = effect.Techniques["Spotlight"];
                     camera.SetEffectParameters(effect);
+                    effect.Parameters["Phi"].SetValue(0.8f);
+                    effect.Parameters["Theta"].SetValue(0.9f);
+                    effect.Parameters["LightSource"].SetValue(Light);
                     effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
                     effect.Parameters["Eye"].SetValue(camEye);
                     effect.Parameters["World"].SetValue(World);
