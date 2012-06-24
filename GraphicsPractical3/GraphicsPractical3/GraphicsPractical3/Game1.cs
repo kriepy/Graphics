@@ -21,7 +21,7 @@ namespace GraphicsPractical3
 
         // Game objects and variables
         Camera camera;
-        Vector3 camEye = new Vector3(0, 50, 300);
+        Vector3 camEye = new Vector3(0, 0, 300);
 
         // Model
         Effect[] effect = new Effect[3];
@@ -128,14 +128,14 @@ namespace GraphicsPractical3
         {
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
-            Matrix World = Matrix.CreateScale(3.0f);
+            Matrix World = Matrix.CreateScale(2.0f);
             Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
             World = Rotate * World;
 
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
-            
+            Vector3 Light = new Vector3(0,0, 40);
             switch (ExcNum)
             {
                 case 0:
@@ -147,6 +147,8 @@ namespace GraphicsPractical3
 
             
                     //modelMaterial.SetEffectParameters(effect);
+                    
+                    effect.Parameters["LightSource"].SetValue(Light);
                     effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
                     effect.Parameters["AmbientIntensity"].SetValue(0.3f);
                     effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
@@ -157,6 +159,9 @@ namespace GraphicsPractical3
                 case 1:
                     effect.CurrentTechnique = effect.Techniques["Spotlight"];
                     camera.SetEffectParameters(effect);
+                    effect.Parameters["Phi"].SetValue(0.8f);
+                    effect.Parameters["Theta"].SetValue(0.9f);
+                    effect.Parameters["LightSource"].SetValue(Light);
                     effect.Parameters["DiffuseColor"].SetValue(Color.Red.ToVector4());
                     effect.Parameters["Eye"].SetValue(camEye);
                     effect.Parameters["World"].SetValue(World);
@@ -170,9 +175,9 @@ namespace GraphicsPractical3
                     lightColors[1] = Color.Blue.ToVector4();
                     lightColors[2] = Color.Green.ToVector4();
                     Vector3[] lightPositions = new Vector3[3];
-                    lightPositions[0] = new Vector3(0, 0, 10);
-                    lightPositions[1] = new Vector3(10, -20, 80);
-                    lightPositions[2] = new Vector3(10, 40, 80);
+                    lightPositions[0] = new Vector3(-10, -20, 50);
+                    lightPositions[1] = new Vector3(10, -20, 50);
+                    lightPositions[2] = new Vector3(0, 40, -80);
                     effect.Parameters["LightPositions"].SetValue(lightPositions);
                     effect.Parameters["LightColors"].SetValue(lightColors);
                     effect.Parameters["World"].SetValue(World);

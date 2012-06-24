@@ -1,14 +1,13 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
-#define LightSource (50,50,50)
 
 //------------------------------------- Top Level Variables -------------------------------------
 
 // Matrices for 3D perspective projection 
 float4x4 View, Projection, World, InvTransWorld;
 float4 AmbientColor, DiffuseColor;
-float3 Eye;
+float3 Eye, LightSource;
 float AmbientIntensity;
 
 //---------------------------------- Input / Output structures ----------------------------------
