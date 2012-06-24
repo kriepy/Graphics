@@ -33,9 +33,19 @@ namespace GraphicsPractical3
         short[] quadIndices;
         Matrix quadTransform;
 
-        //   for rotation
+        // for rotation and translation
         float rotationAmount = 0;
-        int ExcNum = 1;
+        float translationAmount = 0;
+
+        // Post Proccesing
+        private Effect postEffect;
+
+        // Set render target
+        RenderTarget2D renderTarget;
+
+        // For switching excersizes
+        int ExcNum = 2;
+        bool postGray = false;
 
         public Game1()
         {
@@ -66,6 +76,11 @@ namespace GraphicsPractical3
             // Initialize the camera
             camera = new Camera(camEye, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
 
+            // initialize render target
+            renderTarget = new RenderTarget2D(device, device.PresentationParameters.BackBufferWidth,
+                device.PresentationParameters.BackBufferHeight, false, device.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24);
+
             IsMouseVisible = true;
 
             base.Initialize();
@@ -84,7 +99,10 @@ namespace GraphicsPractical3
             effect[2] = Content.Load<Effect>("Effect/MultiLight"); 
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
-            
+
+
+            // Load the "PostProcessing" effect
+            postEffect = Content.Load<Effect>("Effect/PostProcessing");
             // Setup the quad
             //SetupQuad();
 
@@ -100,21 +118,53 @@ namespace GraphicsPractical3
         {
             model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
+            bool Gpressed = false;
+            bool SpacePressed = false;
 
             //Keyboard usage
             KeyboardState KeyState = Keyboard.GetState();
 
             //Change Rotation using  the 'left' and 'right' keys
-            if (KeyState.IsKeyDown(Keys.Left))
+            if (KeyState.IsKeyDown(Keys.Z))
             {
                 rotationAmount = rotationAmount + timeStep / 100;
             }
 
-            if (KeyState.IsKeyDown(Keys.Right))
+            if (KeyState.IsKeyDown(Keys.G))
+            {
+                if (!Gpressed)
+                    postGray = true;
+                Gpressed = true;
+            }
+            if (KeyState.IsKeyUp(Keys.G))
+            {
+                Gpressed = false;
+            }
+
+            if (KeyState.IsKeyDown(Keys.X))
             {
                 rotationAmount = rotationAmount - timeStep / 100;
             }
 
+            if (KeyState.IsKeyDown(Keys.Left))
+            {
+                translationAmount = translationAmount - timeStep / 100;
+            }
+            if (KeyState.IsKeyDown(Keys.Right))
+            {
+                translationAmount = translationAmount + timeStep / 100;
+            }
+
+            if (KeyState.IsKeyDown(Keys.Space))
+            {
+                if (!SpacePressed)
+                    ExcNum = Math.Min((ExcNum + 1),2);
+                SpacePressed = true;
+            }
+            if (KeyState.IsKeyUp(Keys.Space))
+            {
+                SpacePressed = false;
+            }
             // Update the window title
             Window.Title = "XNA Renderer | FPS: " + frameRateCounter.FrameRate;
 
@@ -122,20 +172,23 @@ namespace GraphicsPractical3
         }
 
 
-
-
         protected override void Draw(GameTime gameTime)
         {
+            // set render target
+            device.SetRenderTarget(renderTarget);
+            device.DepthStencilState = new DepthStencilState() { DepthBufferEnable = true };
+
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
             Matrix World = Matrix.CreateScale(3.0f);
             Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
-            World = Rotate * World;
+            Matrix Translate = Matrix.CreateTranslation(new Vector3(translationAmount * 1.0f, 0.0f, 0.0f));
+            World = Rotate * Translate * World;
 
             // Get the model's only mesh
             ModelMesh mesh = model.Meshes[0];
             Effect effect = mesh.Effects[0];
-            
+
             switch (ExcNum)
             {
                 case 0:
@@ -170,7 +223,7 @@ namespace GraphicsPractical3
                     lightColors[1] = Color.Blue.ToVector4();
                     lightColors[2] = Color.Green.ToVector4();
                     Vector3[] lightPositions = new Vector3[3];
-                    lightPositions[0] = new Vector3(0, 0, 10);
+                    lightPositions[0] = new Vector3(-20, 0, 40);
                     lightPositions[1] = new Vector3(10, -20, 80);
                     lightPositions[2] = new Vector3(10, 40, 80);
                     effect.Parameters["LightPositions"].SetValue(lightPositions);
@@ -183,8 +236,23 @@ namespace GraphicsPractical3
 
                     // do nothing for now
             }
-            // Draw the model
+
+            //Draw the model
             mesh.Draw();
+
+            //Handle Post Effects
+            if (postGray) { postEffect.Parameters["Apply"].SetValue(true); }
+            else { postEffect.Parameters["Apply"].SetValue(false); }
+
+            device.SetRenderTarget(null);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,
+                    SamplerState.LinearClamp, DepthStencilState.Default,
+                    RasterizerState.CullNone, postEffect);
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
+            spriteBatch.End();
+
+            // Draw the model
+            //mesh.Draw();
 
             base.Draw(gameTime);
         }

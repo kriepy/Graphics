@@ -1,11 +1,10 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
-#define LightSource (50,50,50)
-#define Phi 0.0005
-#define Theta 0.0005
+#define LightSource (50, 50, 200)
+#define Phi 0.5
+#define Theta 0.5
 #define falloff 1 //kan tussen 0.5 en 1.75 liggen
-#define L (1,2,6)
 
 
 //------------------------------------- Top Level Variables -------------------------------------
@@ -60,9 +59,9 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 	// Compute the direction to the light
     float3 vLight = normalize( LightSource - worldPosition );
-	float3 LightDirection = normalize(L);
+	float3 LightDirection = normalize(LightSource);
 
-	float cosAlpha      = max( 0.0f, dot( vLight, LightDirection ) );
+	float cosAlpha      = max( 0.0f, dot( vLight, -LightDirection ) );
 
 	float fSpotAtten = 0.0f; // default value simplifies branch:
     if( cosAlpha > Theta )
