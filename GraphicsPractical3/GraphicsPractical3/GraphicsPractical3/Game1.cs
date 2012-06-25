@@ -28,12 +28,6 @@ namespace GraphicsPractical3
         Effect effect2;
         Model model;
         Model model2;
-        Material modelMaterial;
-
-        // Quad
-        VertexPositionNormalTexture[] quadVertices;
-        short[] quadIndices;
-        Matrix quadTransform;
 
         // for rotation and translation
         float rotationAmount = 0;
@@ -45,11 +39,14 @@ namespace GraphicsPractical3
         RenderTarget2D renderTarget;
 
         // For switching excersizes
-        int ExcNum = 1;
+        int ExcNum = 0;
         int maxExc = 3;
         bool postGray = false;
+        bool postBlur = false;
+        bool Bpressed = false;
         bool Gpressed = false;
         bool SpacePressed = false;
+        float[] Gauss;
 
         public Game1()
         {
@@ -65,6 +62,15 @@ namespace GraphicsPractical3
 
         protected override void Initialize()
         {
+            float[] Gauss = new float[49] {
+            0.00000067f,	0.00002292f,	0.00019117f,	0.00038771f,	0.00019117f,	0.00002292f,	0.00000067f,
+            0.00002292f,	0.00078633f,	0.00655965f,	0.01330373f,	0.00655965f,	0.00078633f,	0.00002292f,
+            0.00019117f,	0.00655965f,	0.05472157f,	0.11098164f,	0.05472157f,	0.00655965f,	0.00019117f,
+            0.00038771f,	0.01330373f,	0.11098164f,	0.22508352f,	0.11098164f,	0.01330373f,	0.00038771f,
+            0.00019117f,	0.00655965f,	0.05472157f,	0.11098164f,	0.05472157f,	0.00655965f,	0.00019117f,
+            0.00002292f,	0.00078633f,	0.00655965f,	0.01330373f,	0.00655965f,	0.00078633f,	0.00002292f,
+            0.00000067f,	0.00002292f,	0.00019117f,	0.00038771f,	0.00019117f,	0.00002292f,	0.00000067f};
+
             device = graphics.GraphicsDevice;
             // Copy over the device's rasterizer state to change the current fillMode
             device.RasterizerState = new RasterizerState() { CullMode = CullMode.None };
@@ -107,7 +113,7 @@ namespace GraphicsPractical3
             model = Content.Load<Model>("Model/femalehead");
 
             // Load the "PostProcessing" effect
-            postEffect = Content.Load<Effect>("Effect/PostProcessing");
+            postEffect = Content.Load<Effect>("Effect/postProccesing");
 
             // Setup the quad
             //SetupQuad();
@@ -137,16 +143,18 @@ namespace GraphicsPractical3
 
             if (KeyState.IsKeyDown(Keys.G))
             {
-                if (!Gpressed)
-                {
-                    postGray = !postGray;
-                }
+                if (!Gpressed) {postGray = !postGray;}
                 Gpressed = true;
             }
-            if (KeyState.IsKeyUp(Keys.G))
+            if (KeyState.IsKeyUp(Keys.G)) {Gpressed = false;}
+
+            if (KeyState.IsKeyDown(Keys.B))
             {
-                Gpressed = false;
+                if (!Bpressed) { postBlur = !postBlur; }
+                Bpressed = true;
             }
+            if (KeyState.IsKeyUp(Keys.B)) { Bpressed = false; }
+            
 
             if (KeyState.IsKeyDown(Keys.X))
             {
@@ -158,10 +166,7 @@ namespace GraphicsPractical3
                 if (!SpacePressed) { ExcNum = (ExcNum + 1) % (maxExc+1); }
                 SpacePressed = true;
             }
-            if (KeyState.IsKeyUp(Keys.Space))
-            {
-                SpacePressed = false;
-            }
+            if (KeyState.IsKeyUp(Keys.Space)) {SpacePressed = false;}
 
             // Update Excersize
             model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
@@ -280,8 +285,10 @@ namespace GraphicsPractical3
             mesh.Draw();
 
             //Handle Post Effects
-            if (postGray) { postEffect.Parameters["Apply"].SetValue(true); }
-            else { postEffect.Parameters["Apply"].SetValue(false); }
+            if (postGray) { postEffect.Parameters["ApplyGray"].SetValue(true); }
+            else { postEffect.Parameters["ApplyGray"].SetValue(false); }
+            if (postBlur) { postEffect.Parameters["ApplyBlur"].SetValue(true); }
+            else { postEffect.Parameters["ApplyBlur"].SetValue(false); }
 
             device.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque,

@@ -77,8 +77,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Effect\PostProcessing.fx">
-      <Name>PostProcessing</Name>
+    <Compile Include="Effect\postProccesing.fx">
+      <Name>postProccesing</Name>
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
     </Compile>
