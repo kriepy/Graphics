@@ -19,6 +19,7 @@ namespace GraphicsPractical3
         SpriteBatch spriteBatch;
         FrameRateCounter frameRateCounter;
 
+        bool[] InViewFrustum = new bool[4];
         // Game objects and variables
         Camera camera;
         Vector3 camEye = new Vector3(0, -70, 300);
@@ -28,6 +29,7 @@ namespace GraphicsPractical3
         Effect effect2;
         Model model;
         Model[] model2 = new Model[4];
+        Matrix[] World2n = new Matrix[4];
 
         // for rotation and translation
         float rotationAmount = 0;
@@ -83,6 +85,18 @@ namespace GraphicsPractical3
 
             IsMouseVisible = true;
 
+            
+            Matrix World2 = Matrix.CreateScale(2.0f);
+            Matrix Rotate2 = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
+            Matrix Translate;
+            
+            for (int i = 0; i < model2.Length; i++)
+            {
+                Translate = Matrix.CreateTranslation(new Vector3((i - 2) * 150, 0, 0));
+                World2n[i] = Rotate2 * World2 * Translate;
+
+            }
+
             base.Initialize();
         }
 
@@ -121,7 +135,12 @@ namespace GraphicsPractical3
         protected override void Update(GameTime gameTime)
         {
             model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
+            for (int i = 0; i < 4; i++)
+            {
 
+
+                InViewFrustum[i] = Camera.InView(BoundingSphere model2[i].Meshes[0].BoundingSphere.Transform(World2n[i]));
+            }
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
 
             //Keyboard usage
@@ -237,22 +256,14 @@ namespace GraphicsPractical3
                     camera.SetEffectParameters(effect);
                     break;
                 case 3:
-                    Matrix[] World2n = new Matrix[model2.Length];
-                    Matrix World2 = Matrix.CreateScale(2.0f);
-                    Matrix Rotate2 = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
-                    Matrix Translate;
+
                     ModelMesh[] mesh2 = new ModelMesh[4];
-                    for (int i = 0; i < model2.Length; i++)
+                    //World2 = Rotate2 * World2 * Translate;
+                    for (int i = 0; i < 4; i++)
                     {
-                        Translate = Matrix.CreateTranslation(new Vector3((i-2)*150, 0, 0));
-                        World2n[i] = Rotate2 * World2 * Translate;
                         mesh2[i] = model2[i].Meshes[0];
                         effect = mesh2[i].Effects[0];
                     }
-                    //World2 = Rotate2 * World2 * Translate;
-
-
-
                     effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
                     effect.CurrentTechnique = effect.Techniques["Simple"];
                     // Matrices for 3D perspective projection
@@ -272,9 +283,12 @@ namespace GraphicsPractical3
                     
                     for (int i = 0; i < 4; i++)
                     {
+                        //
                         effect.Parameters["World"].SetValue(World2n[i]);
                         mesh2[i].Draw();
+                        
                     }
+                    //BoundingFrustum
                     effect.Parameters["World"].SetValue(World);
                     break;
 
@@ -305,6 +319,7 @@ namespace GraphicsPractical3
 
             base.Draw(gameTime);
         }
+        
 
 
         //public BoundingSphere BoundingSphere

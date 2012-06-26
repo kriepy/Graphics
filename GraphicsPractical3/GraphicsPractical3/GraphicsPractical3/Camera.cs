@@ -31,6 +31,11 @@ namespace GraphicsPractical3
             viewMatrix = Matrix.CreateLookAt(eye, focus, up);
         }
 
+        public bool InView(BoundingSphere boundingSphere)
+        {
+            return new BoundingFrustum(viewMatrix * projectionMatrix).Intersects(boundingSphere);
+        }
+
         public Vector3 Eye
         {
             get { return eye; }
