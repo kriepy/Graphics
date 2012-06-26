@@ -1,7 +1,6 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
-
 #define falloff 1 //kan tussen 0.5 en 1.75 liggen
 
 
@@ -58,10 +57,9 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 	// Compute the direction to the light
     float3 vLight = normalize( LightSource - worldPosition.xyz);
-
 	float3 LightDirection = normalize(LightSource);
 
-	float cosAlpha      = max( 0.0f, dot( vLight, -LightDirection ) );
+	float cosAlpha      = max( 0.0f, dot( vLight, LightDirection ) );
 
 	float fSpotAtten = 0.0f; // default value simplifies branch:
     if( cosAlpha > Theta )
