@@ -19,7 +19,10 @@ namespace GraphicsPractical3
         SpriteBatch spriteBatch;
         FrameRateCounter frameRateCounter;
 
-        bool[] InViewFrustum = new bool[4];
+        const int NR_MODELS = 190;
+        SpriteFont font;
+
+        bool[] InViewFrustum = new bool[NR_MODELS];
         // Game objects and variables
         Camera camera;
         Vector3 camEye = new Vector3(0, -70, 300);
@@ -28,8 +31,8 @@ namespace GraphicsPractical3
         Effect[] effect = new Effect[4];
         Effect effect2;
         Model model;
-        Model[] model2 = new Model[4];
-        Matrix[] World2n = new Matrix[4];
+        Model[] model2 = new Model[NR_MODELS];
+        Matrix[] World2n = new Matrix[NR_MODELS];
 
         // for rotation and translation
         float rotationAmount = 0;
@@ -120,7 +123,7 @@ namespace GraphicsPractical3
             }
             // Load the "PostProcessing" effect
             postEffect = Content.Load<Effect>("Effect/postProccesing");
-
+            font = Content.Load<SpriteFont>("myFont");
             // Setup the quad
             //SetupQuad();
 
@@ -134,12 +137,15 @@ namespace GraphicsPractical3
 
         protected override void Update(GameTime gameTime)
         {
+            BoundingSphere sphere;
             model.Meshes[0].MeshParts[0].Effect = effect[ExcNum];
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < NR_MODELS; i++)
             {
 
+                sphere = new BoundingSphere();
+                sphere = BoundingSphere.CreateMerged(sphere, model2[i].Meshes[0].BoundingSphere);
 
-                InViewFrustum[i] = Camera.InView(BoundingSphere model2[i].Meshes[0].BoundingSphere.Transform(World2n[i]));
+                InViewFrustum[i] = camera.InView(sphere.Transform(World2n[i]));
             }
             float timeStep = (float)gameTime.ElapsedGameTime.TotalSeconds * 60.0f;
 
@@ -190,6 +196,12 @@ namespace GraphicsPractical3
 
         protected override void Draw(GameTime gameTime)
         {
+            int num = 0;
+           for (int i = 0; i < NR_MODELS; i++)
+           {
+               if (!(InViewFrustum[i])) { num++; }
+           }
+           string numstr = num.ToString();
             // set render target
             device.SetRenderTarget(renderTarget);
             device.DepthStencilState = new DepthStencilState() { DepthBufferEnable = true };
@@ -257,9 +269,9 @@ namespace GraphicsPractical3
                     break;
                 case 3:
 
-                    ModelMesh[] mesh2 = new ModelMesh[4];
+                    ModelMesh[] mesh2 = new ModelMesh[NR_MODELS];
                     //World2 = Rotate2 * World2 * Translate;
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < NR_MODELS; i++)
                     {
                         mesh2[i] = model2[i].Meshes[0];
                         effect = mesh2[i].Effects[0];
@@ -281,11 +293,13 @@ namespace GraphicsPractical3
 
 
                     
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < NR_MODELS; i++)
                     {
-                        //
-                        effect.Parameters["World"].SetValue(World2n[i]);
-                        mesh2[i].Draw();
+                        if (InViewFrustum[i])
+                        {
+                            effect.Parameters["World"].SetValue(World2n[i]);
+                            mesh2[i].Draw();
+                        }
                         
                     }
                     //BoundingFrustum
@@ -312,6 +326,8 @@ namespace GraphicsPractical3
                     SamplerState.LinearClamp, DepthStencilState.Default,
                     RasterizerState.CullNone, postEffect);
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 800, 600), Color.White);
+            if (ExcNum == 3)
+                spriteBatch.DrawString(font, numstr, new Vector2(20, 45), Color.White);
             spriteBatch.End();
 
             // Draw the model
