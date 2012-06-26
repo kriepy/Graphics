@@ -27,7 +27,7 @@ namespace GraphicsPractical3
         Effect[] effect = new Effect[4];
         Effect effect2;
         Model model;
-        Model model2;
+        Model[] model2 = new Model[4];
 
         // for rotation and translation
         float rotationAmount = 0;
@@ -101,8 +101,9 @@ namespace GraphicsPractical3
             effect2 = Content.Load<Effect>("Effect/CookTorrance");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
-            model2 = Content.Load<Model>("Model/femalehead");
-
+            for(int i=0;i<model2.Length;i++){
+                model2[i] = Content.Load<Model>("Model/femalehead");
+            }
             // Load the "PostProcessing" effect
             postEffect = Content.Load<Effect>("Effect/postProccesing");
 
@@ -236,13 +237,20 @@ namespace GraphicsPractical3
                     camera.SetEffectParameters(effect);
                     break;
                 case 3:
+                    Matrix[] World2n = new Matrix[model2.Length];
                     Matrix World2 = Matrix.CreateScale(2.0f);
                     Matrix Rotate2 = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
-                    Matrix Translate = Matrix.CreateTranslation(new Vector3(150, 0, 0));
-                    World2 = Rotate2 * World2 * Translate;
+                    Matrix Translate;
+                    ModelMesh[] mesh2 = new ModelMesh[4];
+                    for (int i = 0; i < model2.Length; i++)
+                    {
+                        Translate = Matrix.CreateTranslation(new Vector3((i-2)*150, 0, 0));
+                        World2n[i] = Rotate2 * World2 * Translate;
+                        mesh2[i] = model2[i].Meshes[0];
+                        effect = mesh2[i].Effects[0];
+                    }
+                    //World2 = Rotate2 * World2 * Translate;
 
-                    ModelMesh mesh2 = model2.Meshes[0];
-                    effect = mesh2.Effects[0];
 
 
                     effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
@@ -261,8 +269,12 @@ namespace GraphicsPractical3
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
 
 
-                    effect.Parameters["World"].SetValue(World2);
-                    mesh2.Draw();
+                    
+                    for (int i = 0; i < 4; i++)
+                    {
+                        effect.Parameters["World"].SetValue(World2n[i]);
+                        mesh2[i].Draw();
+                    }
                     effect.Parameters["World"].SetValue(World);
                     break;
 
