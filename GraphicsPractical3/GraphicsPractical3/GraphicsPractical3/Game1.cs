@@ -21,7 +21,7 @@ namespace GraphicsPractical3
 
         // Game objects and variables
         Camera camera;
-        Vector3 camEye = new Vector3(0, 0, 300);
+        Vector3 camEye = new Vector3(0, 50, 300);
 
         // Model
         Effect[] effect = new Effect[4];
@@ -89,6 +89,7 @@ namespace GraphicsPractical3
             effect2 = Content.Load<Effect>("Effect/CookTorrance");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
+            model2 = Content.Load<Model>("Model/femalehead");
 
             model2 = Content.Load<Model>("Model/femalehead");
 
@@ -136,7 +137,7 @@ namespace GraphicsPractical3
         {
             // Clear the screen in a predetermined color and clear the depth buffer
             device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.DeepSkyBlue, 1.0f, 0);
-            Matrix World = Matrix.CreateScale(2.0f);
+            Matrix World = Matrix.CreateScale(3.0f);
             Matrix Rotate = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
             World = Rotate * World;
 
@@ -201,9 +202,6 @@ namespace GraphicsPractical3
 
                     ModelMesh mesh2 = model2.Meshes[0];
                     effect = mesh2.Effects[0];
-
-
-
 
 
                     effect.Parameters["AmbientColor"].SetValue(Color.Red.ToVector4());
