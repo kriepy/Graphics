@@ -1,15 +1,13 @@
 //------------------------------------------- Defines -------------------------------------------
 
 #define Pi 3.14159265
-#define MAX_LIGHTS 3
+#define MAX_LIGHTS 3 //defines the number of lights
 
 //------------------------------------- Top Level Variables -------------------------------------
 float4x4 World, View, Projection, InvTransWorld;
 float4 DiffuseColor;
 float4 LightColors[MAX_LIGHTS];
 float3 LightPositions[MAX_LIGHTS];
-
-// TODO: add effect parameters here.
 
 struct VertexShaderInput
 {
@@ -44,8 +42,11 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
+	//Calculate the normal vector
 	float3 N = normalize(mul(input.normal, InvTransWorld));
 	float4 diffuse = float4(0.0f,0.0f,0.0f,0.0f);
+
+	// For every light add a diffuse component
 	for (int i = 0; i < MAX_LIGHTS; i++)
 	{
 		float3 L = normalize(LightPositions[i] - input.Position3D);

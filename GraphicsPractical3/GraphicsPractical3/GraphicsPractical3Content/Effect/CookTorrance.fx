@@ -48,7 +48,7 @@ VertexShaderOutput SimpleVertexShader(VertexShaderInput input)
 
 float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 {
-    // TODO: add your pixel shader code here.
+    // Calculate normal, eye, light and half vectors (normalized)
 	float3 N = normalize(mul(input.normal, InvTransWorld));
 	float3 E = normalize(Eye - input.Position3D);
 	float3 L = normalize(LightSource - input.Position3D);
@@ -56,13 +56,17 @@ float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 
 	float m = 0.5f;
 	float alpha = acos(dot(N,H));
+	// Calculate the roughness component
 	float D = exp(-pow(tan(alpha)/m,2))/(Pi*m*m*pow(cos(alpha),4));
 	
 	float F0 = 1.42f;
+	// Calculate how much light is reflected and how much gets refracted. Using Schlick's approximation
 	float F = F0 + (1-F0)*pow(1-dot(E,H),5);
 	
+	// Calculate the geometric attenuation
 	float G = min(1, min( 2*dot(H,N)*dot(E,N)/dot(E,H) , 2*dot(H,N)*dot(L,N)/dot(E,H) ));
 
+	// Calculate the specular component
 	float specular = D*F*G/dot(E,N);
 
 	// The three lighting factors are calculated seperatly
@@ -72,6 +76,7 @@ float4 SimplePixelShader(VertexShaderOutput input) : COLOR0
 	// Diffuse light is dependant on the orientation of the incident light and the normal of the surface
 	float4 diffuse = max(0,dot(N,L))*DiffuseColor;
 
+	// Add all components
     return ambient+diffuse+specular;
 }
 
