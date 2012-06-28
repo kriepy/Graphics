@@ -19,13 +19,16 @@ namespace GraphicsPractical3
         SpriteBatch spriteBatch;
         FrameRateCounter frameRateCounter;
 
-        const int NR_MODELS = 190;
-        SpriteFont font;
-
+        // Amount of models for the culling exersize
+        const int NR_MODELS = 200;
         bool[] InViewFrustum = new bool[NR_MODELS];
+
+        // A font to draw text in the image
+        SpriteFont font;
+        
         // Game objects and variables
         Camera camera;
-        Vector3 camEye = new Vector3(0, -70, 300);
+        Vector3 camEye = new Vector3(0, 40, 300);
 
         // Model
         Effect[] effect = new Effect[4];
@@ -88,7 +91,7 @@ namespace GraphicsPractical3
 
             IsMouseVisible = true;
 
-            
+            // generate several world matrices for translating the multiple models for use in the culling exersize
             Matrix World2 = Matrix.CreateScale(2.0f);
             Matrix Rotate2 = Matrix.CreateRotationY((float)Math.PI * rotationAmount);
             Matrix Translate;
@@ -118,22 +121,15 @@ namespace GraphicsPractical3
             effect2 = Content.Load<Effect>("Effect/CookTorrance");
             // Load the model and let it use the "Simple" effect
             model = Content.Load<Model>("Model/femalehead");
-            for(int i=0;i<model2.Length;i++){
+            for(int i=0;i<NR_MODELS;i++){
                 model2[i] = Content.Load<Model>("Model/femalehead");
             }
             // Load the "PostProcessing" effect
             postEffect = Content.Load<Effect>("Effect/postProccesing");
+
+            //load font
             font = Content.Load<SpriteFont>("myFont");
-            // Setup the quad
-            //SetupQuad();
-
-            //font
-            //font = Content.Load<SpriteFont>("myFont");
         }
-
-
-
-
 
         protected override void Update(GameTime gameTime)
         {
@@ -237,6 +233,7 @@ namespace GraphicsPractical3
                     effect.Parameters["Eye"].SetValue(camEye);
                     effect.Parameters["World"].SetValue(World);
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
+                    mesh.Draw();
                     break;
                 case 1:
                     effect.CurrentTechnique = effect.Techniques["Spotlight"];
@@ -248,6 +245,7 @@ namespace GraphicsPractical3
                     effect.Parameters["Eye"].SetValue(camEye);
                     effect.Parameters["World"].SetValue(World);
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
+                    mesh.Draw();
                     break;
 
                 case 2:
@@ -266,6 +264,7 @@ namespace GraphicsPractical3
                     effect.Parameters["InvTransWorld"].SetValueTranspose(Matrix.Invert(World));
                     effect.Parameters["DiffuseColor"].SetValue(Color.White.ToVector4());
                     camera.SetEffectParameters(effect);
+                    mesh.Draw();
                     break;
                 case 3:
 
@@ -310,7 +309,7 @@ namespace GraphicsPractical3
             }
 
             //Draw the model
-            mesh.Draw();
+            
 
             //Handle Post Effects
             if (postGray) { postEffect.Parameters["ApplyGray"].SetValue(true); }

@@ -12,7 +12,7 @@
 float4x4 View, Projection, World, InvTransWorld;
 float4  DiffuseColor;
 float3 Eye, LightSource;
-float Phi, Theta;
+float Phi, Theta; //The angle of the spotlight. Theta is the inner and Phi the outer angle
 
 //---------------------------------- Input / Output structures ----------------------------------
 
@@ -32,12 +32,6 @@ struct VertexShaderOutput
 };
 
 
-//------------------------------------------ Functions ------------------------------------------
-
-
-
-
-
 //---------------------------------------- Technique: Spotlight ----------------------------------------
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -45,35 +39,31 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	// Allocate an empty output struct
 	VertexShaderOutput output = (VertexShaderOutput)0;
 
-	// Do the matrix multiplications for perspective projection and the world transform
-	float4 worldPosition = mul(input.Position3D, World);
-    float4 viewPosition  = mul(worldPosition, View);
-	output.Position2D    = mul(viewPosition, Projection);
+	float4 worldPosition = mul(input.Position3D, World); //The WorldPosition for every vertex of the model
+    float4 viewPosition  = mul(worldPosition, View); //The View-Matrix
+	output.Position2D    = mul(viewPosition, Projection); // The position of every vertix on the 2D screen
 
 	float3 normal = normalize(mul(input.normal, InvTransWorld));
 
-	//float fDistance = distance( worldPosition, LightSource );
-	//float fLinearAtten = lerp( 1.0f, 0.0f, fDistance / fLightRange );
-
 	// Compute the direction to the light
-    float3 vLight = normalize( LightSource - worldPosition.xyz);
+    float3 Light = normalize( LightSource - worldPosition.xyz);
 	float3 LightDirection = normalize(LightSource);
 
-	float cosAlpha      = max( 0.0f, dot( vLight, LightDirection ) );
+	float cosAlpha      = max( 0.0f, dot( Light, LightDirection ) ); // the angle between the light direction and the distanve of the vertex to the LightSource
 
-	float fSpotAtten = 0.0f; // default value simplifies branch:
+	float SpotAtten = 0.0f;
     if( cosAlpha > Theta )
     {
-        fSpotAtten = 1.0f;
+		SpotAtten = 1.0f;
     }
     else if( cosAlpha > Phi )
     {
-        fSpotAtten = pow( (cosAlpha - Phi) / (Theta - Phi), falloff );
+        SpotAtten = pow( (cosAlpha - Phi) / (Theta - Phi), falloff );
     }
 
-	float NdotL = max( 0.0f, dot( normal, vLight ) );
+	float NdotL = max( 0.0f, dot( normal, Light ) );
 	float3 dif = DiffuseColor.xyz;
-	output.normal = float4(NdotL*fSpotAtten*dif,1.0f);
+	output.normal = float4(NdotL*SpotAtten*dif,1.0f);
 
 
 	return output;
@@ -85,10 +75,6 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 	return color;
 }
-
-
-
-
 
 
 technique Spotlight
