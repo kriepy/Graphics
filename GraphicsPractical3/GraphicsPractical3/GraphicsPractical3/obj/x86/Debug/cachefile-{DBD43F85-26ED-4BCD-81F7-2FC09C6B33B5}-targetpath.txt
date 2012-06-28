@@ -1,6 +1,0 @@
-Content\Model\femalehead.xnb
-Content\Effect\CookTorrance.xnb
-Content\Effect\MultiLight.xnb
-Content\Effect\Spotlight.xnb
-Content\Effect\postProccesing.xnb
-Content\myFont.xnb
